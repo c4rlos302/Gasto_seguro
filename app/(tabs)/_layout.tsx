@@ -1,33 +1,59 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
-        name="index"
+        name="inicio"
         options={{
-          title: 'Home',
+          title: 'Inicio',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="perfil"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="reportes"
+        options={{
+          title: 'Reportes',
+          href: null,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="ingresos"
+        options={{
+          title: 'Ingresos',
+          href: null,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="arrow.up.square.fill" color={color}
+           />,
+        }}
+      />
+      <Tabs.Screen
+        name="gastos"
+        options={{
+          title: 'Gastos',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="arrow.down.square.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="presupuestos"
+        options={{
+          title: 'Presupuestos',
+          href: null,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="wallet.pass.fill" color={color} />,
         }}
       />
     </Tabs>
