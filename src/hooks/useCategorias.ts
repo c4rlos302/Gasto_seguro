@@ -6,14 +6,14 @@ import {
   updateCategoria,
 } from "../services/categorias.service";
 
-export function useCategorias() {
+export function useCategorias(tipo?: string) {
   const [categorias, setCategorias] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchCategorias = async () => {
     setLoading(true);
 
-    const res = await getCategorias();
+    const res = await getCategorias(tipo);
 
     if (!res) return;
     const { data, error } = res;

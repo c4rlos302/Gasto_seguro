@@ -1,19 +1,24 @@
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
-  View,
+  Alert,
+  Pressable,
+  StyleSheet,
   Text,
   TextInput,
-  Pressable,
-  Alert,
-  StyleSheet,
+  View,
+  ScrollView,
 } from "react-native";
+import { Loader } from "../../components/loader";
+import Card from "../../components/ui/Card";
+import Header from "../../components/ui/Header";
 import { useCategorias } from "../../src/hooks/useCategorias";
 import { useMovimientos } from "../../src/hooks/useMovimientos";
-import { router } from "expo-router";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddGastoScreen() {
-  const { categorias } = useCategorias();
+  const { categorias } = useCategorias("gasto");
   const { addMovimiento } = useMovimientos();
 
   const [monto, setMonto] = useState("");
@@ -23,14 +28,14 @@ export default function AddGastoScreen() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSave = async () => {
+  const guardarGasto = async () => {
     if (!monto) {
       Alert.alert("Error", "Escribe un monto para el gasto");
       return;
-    }else if (!fecha) {
+    } else if (!fecha) {
       Alert.alert("Error", "Selecciona una fecha");
       return;
-    }else if (!categoriaId) {
+    } else if (!categoriaId) {
       Alert.alert("Error", "Selecciona una categoría");
       return;
     }
@@ -60,16 +65,17 @@ export default function AddGastoScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#dc2626" }}>
+    <View style={{ flex: 1 }}>
 
-      {/* HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Agregar gasto</Text>
-      </View>
+      <Header
+        title="Agregar gasto"
+        up={
+          <Pressable onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </Pressable>
+        } />
 
-      {/* CARD */}
-      <View style={styles.card}>
-
+      <Card>
         <Text style={styles.label}>Monto</Text>
         <TextInput
           placeholder="Monto"
@@ -86,7 +92,7 @@ export default function AddGastoScreen() {
 
         {show && (
           <DateTimePicker
-            value={ fecha || new Date() }
+            value={fecha || new Date()}
             mode="date"
             display="default"
             onChange={(_, f) => {
@@ -98,6 +104,7 @@ export default function AddGastoScreen() {
 
         <Text style={styles.label}>Categoría</Text>
 
+        <ScrollView style={{maxHeight: 125}}>
         <View style={styles.categorias}>
           {categorias.map((cat: any) => (
             <Pressable
@@ -117,7 +124,13 @@ export default function AddGastoScreen() {
               </Text>
             </Pressable>
           ))}
+          <Pressable 
+            style={{...styles.categoria, backgroundColor: "#dc2626"}}
+            onPress={() => {setCategoriaId(""); Alert.alert("Crear categoria", "Ir a crear categoria")}}>
+            <Text style={{color: "#fff"}}>Otra</Text>
+          </Pressable>
         </View>
+        </ScrollView>
 
         <Text style={styles.label}>Descripción</Text>
         <TextInput
@@ -129,45 +142,20 @@ export default function AddGastoScreen() {
 
         <Pressable
           style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleSave}
+          onPress={guardarGasto}
         >
           <Text style={styles.buttonText}>
             {loading ? "Guardando..." : "Guardar gasto"}
           </Text>
         </Pressable>
 
-      </View>
+      </Card>
+      <Loader visible={loading} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 140,
-    padding: 20,
-    justifyContent: "flex-end",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 25,
-  },
-
-  card: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-    marginTop: -20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-
   input: {
     backgroundColor: "#fff",
     padding: 14,

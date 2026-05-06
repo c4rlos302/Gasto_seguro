@@ -1,10 +1,10 @@
 import { supabase } from "./supabase";
 
-export const getCategorias = async () => {
+export const getCategorias = async (tipo: any) => {
   return await supabase
     .from("categorias")
     .select("*")
-    .eq("tipo", "gasto");
+    .eq("tipo", tipo);
 };
 
 export const createCategoria = async (categoria: any) => {

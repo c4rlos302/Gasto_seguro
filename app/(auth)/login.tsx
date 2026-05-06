@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, Pressable } from 'react-native';
+import { View, Text, TextInput, Alert, Pressable } from 'react-native';
 import { login } from '../../src/services/auth.service';
 import { router } from 'expo-router';
 import { Loader } from '../../components/loader';
@@ -11,12 +11,12 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if(loading) return;
+    if (loading) return;
 
     if (!email) {
       Alert.alert('Error', 'Por favor ingresa tu correo');
       return;
-    }else if (!password) {
+    } else if (!password) {
       Alert.alert('Error', 'Por favor ingresa tu contraseña');
       return;
     }
@@ -36,8 +36,8 @@ export default function LoginScreen() {
   };
 
   return (
-     <View style={styles.container}>
-      
+    <View style={styles.container}>
+
       <Text style={styles.title}>Gasto Seguro</Text>
       <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
 

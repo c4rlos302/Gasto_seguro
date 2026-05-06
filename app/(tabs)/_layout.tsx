@@ -36,7 +36,6 @@ export default function TabLayout() {
         name="ingresos"
         options={{
           title: 'Ingresos',
-          href: null,
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="arrow.up.square.fill" color={color}
            />,
         }}

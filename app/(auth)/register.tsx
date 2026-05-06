@@ -24,7 +24,7 @@ export default function RegisterScreen() {
     if (!email || !password || !confirmPassword || !nombre) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
-    }else if (password !== confirmPassword) {
+    } else if (password !== confirmPassword) {
       Alert.alert('Error', 'Las contraseñas no coinciden');
       return;
     }
@@ -46,7 +46,7 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
-      
+
       <Text style={styles.title}>Crear cuenta</Text>
       <Text style={styles.subtitle}>Regístrate para comenzar</Text>
 
