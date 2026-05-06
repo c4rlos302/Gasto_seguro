@@ -24,9 +24,7 @@ export default function RegisterScreen() {
     if (!email || !password || !confirmPassword || !nombre) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
-    }
-
-    if (password !== confirmPassword) {
+    }else if (password !== confirmPassword) {
       Alert.alert('Error', 'Las contraseñas no coinciden');
       return;
     }

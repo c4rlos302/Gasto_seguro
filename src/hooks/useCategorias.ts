@@ -14,8 +14,6 @@ export function useCategorias() {
     setLoading(true);
 
     const res = await getCategorias();
-    console.log("RES:", res);
-    console.log("DATA:", res?.data);
 
     if (!res) return;
     const { data, error } = res;

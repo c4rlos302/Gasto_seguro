@@ -13,6 +13,14 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if(loading) return;
 
+    if (!email) {
+      Alert.alert('Error', 'Por favor ingresa tu correo');
+      return;
+    }else if (!password) {
+      Alert.alert('Error', 'Por favor ingresa tu contraseña');
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await login(email, password);
