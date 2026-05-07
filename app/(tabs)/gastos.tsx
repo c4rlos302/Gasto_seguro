@@ -51,16 +51,16 @@ export default function AddGastoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar gasto </Text>
+      <View style={styles.header}><Text style={styles.title}>Agregar gasto </Text></View>
 
-      <TextInput
-        placeholder="Monto"
+      <View style={styles.containerView}><TextInput
+        placeholder="Monto $"
         keyboardType="numeric"
         value={monto}
         onChangeText={setMonto}
         style={styles.input}
       />
-
+     
       <TextInput
         placeholder="Descripción (opcional)"
         value={descripcion}
@@ -93,6 +93,7 @@ export default function AddGastoScreen() {
           {loading ? "Guardando..." : "Guardar gasto"}
         </Text>
       </Pressable>
+      </View>
     </View>
   );
 }
@@ -100,13 +101,34 @@ export default function AddGastoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#F8FAFC",
+  },
+  header: {
+     height: 80,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#AACDDC",
+    paddingHorizontal: 20,
+    paddingTop: 30,
+    borderRadius: 8,
+    marginBottom: 20, 
+  },
+  containerView: {
+    padding: 15,
+    marginHorizontal: 10,  
+    marginTop: 15,          
+    backgroundColor: "#e9f3ff",
+    borderRadius: 20,
+    width: "auto",         
   },
   title: {
+    color: "#ffffff",
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
     backgroundColor: "#fff",
@@ -129,14 +151,14 @@ const styles = StyleSheet.create({
   },
   categoria: {
     padding: 10,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "#BCCCDC",
     borderRadius: 8,
   },
   categoriaActiva: {
     backgroundColor: "#2563eb",
   },
   button: {
-    backgroundColor: "#dc2626",
+    backgroundColor: "#1d4ed8",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
