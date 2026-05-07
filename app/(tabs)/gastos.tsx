@@ -17,7 +17,7 @@ import Header from "../../components/ui/Header";
 import { useCategorias } from "../../src/hooks/useCategorias";
 import { useMovimientos } from "../../src/hooks/useMovimientos";
 
-export default function AddGastoScreen() {
+export default function addGastos() {
   const { categorias } = useCategorias("gasto");
   const { addMovimiento } = useMovimientos();
 

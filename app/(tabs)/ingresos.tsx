@@ -9,7 +9,7 @@ import { useCategorias } from '../../src/hooks/useCategorias'
 import { useMovimientos } from '../../src/hooks/useMovimientos'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-export default function ingresos() {
+export default function addIngresos() {
   const { categorias } = useCategorias("ingreso");
   const { addMovimiento } = useMovimientos();
 
