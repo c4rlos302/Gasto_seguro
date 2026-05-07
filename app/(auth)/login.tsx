@@ -85,17 +85,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#AACDDC',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#213448',
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#547792',
     marginBottom: 25,
   },
   form: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   link: {
     marginTop: 15,
     textAlign: 'center',
-    color: '#2563eb',
+    color: '#994B4C1',
     fontWeight: '500',
   },
 });

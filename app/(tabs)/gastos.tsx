@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
 
   categoria: {
     padding: 10,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "#BCCCDC",
     borderRadius: 8,
   },
 
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "#dc2626",
+    backgroundColor: "#1d4ed8",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
