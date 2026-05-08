@@ -1,10 +1,8 @@
+import Header from '@/components/ui/Header'
 import React from 'react'
-import { Text } from 'react-native'
 
-function reportes() {
+export default function reportes() {
   return (
-    <Text>Reportes</Text>
+    <Header title="Reportes" />
   )
 }
-
-export default reportes

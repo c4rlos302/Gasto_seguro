@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Text, View, Pressable, TextInput, StyleSheet, Alert, ScrollView } from 'react-native'
+import { Text, View, Pressable, TextInput, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native'
 import { Loader } from '../../components/loader'
 import Header from '../../components/ui/Header'
-import Card from '../../components/ui/Card'
+import { CardContainer, CardView } from '../../components/ui/Card'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useCategorias } from '../../src/hooks/useCategorias'
@@ -56,14 +56,14 @@ export default function addIngresos() {
     router.back();
   }
   return (
-    <View style={{ flex: 1 }}>
+    <CardContainer>
       <Header title="Agregar ingreso"
         up={
           <Pressable onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </Pressable>
         } />
-      <Card>
+      <CardView>
         <Text style={styles.label}>Monto</Text>
         <TextInput
           placeholder="Monto"
@@ -104,19 +104,16 @@ export default function addIngresos() {
                 onPress={() => setCategoriaId(cat.id)}
               >
                 <Text
-                  style={{
-                    color: categoriaId === cat.id ? "#fff" : "#000",
-                  }}
-                >
+                  style={styles.text}>
                   {cat.nombre}
                 </Text>
               </Pressable>
             ))}
-            <Pressable
-              style={{ ...styles.categoria, backgroundColor: "#dc2626" }}
+            <TouchableOpacity
+              style={styles.categoria}
               onPress={() => { setCategoriaId(""); Alert.alert("Crear categoria", "Ir a crear categoria") }}>
-              <Text style={{ color: "#fff" }}>Otra</Text>
-            </Pressable>
+              <Text style={styles.text}>Otra</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -128,17 +125,17 @@ export default function addIngresos() {
           style={styles.input}
         />
 
-        <Pressable
+        <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={guardarIngreso}
         >
           <Text style={styles.buttonText}>
             {loading ? "Guardando..." : "Guardar Ingreso"}
           </Text>
-        </Pressable>
-      </Card>
+        </TouchableOpacity>
+      </CardView>
       <Loader visible={loading} />
-    </View>
+    </CardContainer>
   )
 }
 
@@ -167,16 +164,16 @@ const styles = StyleSheet.create({
 
   categoria: {
     padding: 10,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "#fff",
     borderRadius: 8,
   },
 
   categoriaActiva: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#AACDDC",
   },
 
   button: {
-    backgroundColor: "#dc2626",
+    backgroundColor: "#AACDDC",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -185,6 +182,10 @@ const styles = StyleSheet.create({
 
   buttonDisabled: {
     opacity: 0.6,
+  },
+
+  text: {
+    color: "#000"
   },
 
   buttonText: {

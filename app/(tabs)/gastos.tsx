@@ -10,9 +10,10 @@ import {
   TextInput,
   View,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { Loader } from "../../components/loader";
-import Card from "../../components/ui/Card";
+import { CardContainer, CardView } from "../../components/ui/Card";
 import Header from "../../components/ui/Header";
 import { useCategorias } from "../../src/hooks/useCategorias";
 import { useMovimientos } from "../../src/hooks/useMovimientos";
@@ -65,7 +66,7 @@ export default function addGastos() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <CardContainer>
 
       <Header
         title="Agregar gasto"
@@ -75,7 +76,7 @@ export default function addGastos() {
           </Pressable>
         } />
 
-      <Card>
+      <CardView>
         <Text style={styles.label}>Monto</Text>
         <TextInput
           placeholder="Monto"
@@ -115,20 +116,16 @@ export default function addGastos() {
               ]}
               onPress={() => setCategoriaId(cat.id)}
             >
-              <Text
-                style={{
-                  color: categoriaId === cat.id ? "#fff" : "#000",
-                }}
-              >
+              <Text style={styles.text}>
                 {cat.nombre}
               </Text>
             </Pressable>
           ))}
-          <Pressable 
-            style={{...styles.categoria, backgroundColor: "#dc2626"}}
+          <TouchableOpacity 
+            style={styles.categoria}
             onPress={() => {setCategoriaId(""); Alert.alert("Crear categoria", "Ir a crear categoria")}}>
-            <Text style={{color: "#fff"}}>Otra</Text>
-          </Pressable>
+            <Text style={styles.text}>Otra</Text>
+          </TouchableOpacity>
         </View>
         </ScrollView>
 
@@ -140,18 +137,18 @@ export default function addGastos() {
           style={styles.input}
         />
 
-        <Pressable
+        <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={guardarGasto}
         >
           <Text style={styles.buttonText}>
             {loading ? "Guardando..." : "Guardar gasto"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
 
-      </Card>
+      </CardView>
       <Loader visible={loading} />
-    </View>
+    </CardContainer>
   );
 }
 
@@ -180,16 +177,16 @@ const styles = StyleSheet.create({
 
   categoria: {
     padding: 10,
-    backgroundColor: "#BCCCDC",
+    backgroundColor: "#fff",
     borderRadius: 8,
   },
 
   categoriaActiva: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#AACDDC",
   },
 
   button: {
-    backgroundColor: "#1d4ed8",
+    backgroundColor: "#AACDDC",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -200,8 +197,11 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 
+  text: {
+    color: "#000",
+  },
   buttonText: {
     color: "#fff",
     fontWeight: "600",
-  },
+  }
 });

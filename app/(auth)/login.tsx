@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Alert, Pressable } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { login } from '../../src/services/auth.service';
 import { router } from 'expo-router';
 import { Loader } from '../../components/loader';
@@ -59,20 +59,20 @@ export default function LoginScreen() {
           style={styles.input}
         />
 
-        <Pressable
+        <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleLogin}
         >
           <Text style={styles.buttonText}>
             {loading ? "Cargando..." : "Ingresar"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable onPress={() => router.push('/(auth)/register')}>
+        <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
           <Text style={styles.link}>
             ¿No tienes cuenta? Regístrate
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <Loader visible={loading} />

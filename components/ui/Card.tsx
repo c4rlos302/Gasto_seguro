@@ -1,22 +1,24 @@
 import { View, StyleSheet } from "react-native";
 
-export default function Card({ children }: any) {
-  return <View style={styles.card}>{children}</View>;
+export function CardContainer({ children }: any) {
+  return <View style={styles.cardContainer}>{children}</View>;
+}
+
+export function CardView({ children }: any) {
+  return <View style={styles.cardView}>{children}</View>
 }
 
 const styles = StyleSheet.create({
-  card: {
+  cardContainer: {
     flex: 1,
-    backgroundColor: "#f8fafc",
-    marginTop: -20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
+    backgroundColor: "#F8FAFC",
   },
+  cardView: {
+    padding: 15,
+    marginHorizontal: 10,  
+    marginTop: 15,          
+    backgroundColor: "#e9f3ff",
+    borderRadius: 20,
+    width: "auto"
+  }
 });

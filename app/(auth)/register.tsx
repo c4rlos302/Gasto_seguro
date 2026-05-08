@@ -3,9 +3,9 @@ import {
   View,
   Text,
   TextInput,
-  Pressable,
   Alert,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import { register } from '../../src/services/auth.service';
 import { router } from 'expo-router';
@@ -83,20 +83,20 @@ export default function RegisterScreen() {
           style={styles.input}
         />
 
-        <Pressable
+        <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleRegister}
         >
           <Text style={styles.buttonText}>
             {loading ? "Creando cuenta..." : "Registrarse"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable onPress={() => router.push('/(auth)/login')}>
+        <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
           <Text style={styles.link}>
             ¿Ya tienes cuenta? Inicia sesión
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <Loader visible={loading} />

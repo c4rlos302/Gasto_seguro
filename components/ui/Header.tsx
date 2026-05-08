@@ -19,12 +19,15 @@ export default function Header({ title, up }: any) {
 
 const styles = StyleSheet.create({
   header: {
-    height: 140,
+    height: 100,
+    paddingTop: 30,
     paddingHorizontal: 20,
-    backgroundColor: "#dc2626",
+    backgroundColor: "#AACDDC",
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "center",
+    marginBottom: 20,
+    borderRadius: 8,
   },
   title: {
     fontSize: 24,

@@ -1,10 +1,8 @@
+import Header from '@/components/ui/Header'
 import React from 'react'
-import { Text } from 'react-native'
 
-function presupuestos() {
+export default function presupuestos() {
   return (
-    <Text>Presupuestos</Text>
+    <Header title="Presupuestos" />
   )
 }
-
-export default presupuestos
