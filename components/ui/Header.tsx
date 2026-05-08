@@ -1,16 +1,20 @@
-import { View, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 
-export default function Header({ title, up }: any) {
+export default function Header({ title, regresar }: any) {
   return (
     <View style={styles.header}>
-      
-    {
-        up && (
-      <View style={styles.up}>
-        {up}
-      </View>)
-    }
-      
+
+      {
+        regresar && (
+          <View style={styles.regresar}>
+            <Pressable onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color="#fff" />
+            </Pressable>
+          </View>)
+      }
+
       <Text style={styles.title}>{title}</Text>
 
     </View>
@@ -34,7 +38,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
   },
-  up: {
+  regresar: {
     flexDirection: "row",
     gap: 10,
   },

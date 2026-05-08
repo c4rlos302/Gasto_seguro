@@ -57,12 +57,7 @@ export default function addIngresos() {
   }
   return (
     <CardContainer>
-      <Header title="Agregar ingreso"
-        up={
-          <Pressable onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </Pressable>
-        } />
+      <Header title="Agregar ingreso" regresar="true" />
       <CardView>
         <Text style={styles.label}>Monto</Text>
         <TextInput

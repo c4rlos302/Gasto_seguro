@@ -70,11 +70,7 @@ export default function addGastos() {
 
       <Header
         title="Agregar gasto"
-        up={
-          <Pressable onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </Pressable>
-        } />
+        regresar="true" />
 
       <CardView>
         <Text style={styles.label}>Monto</Text>

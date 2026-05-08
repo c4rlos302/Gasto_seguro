@@ -25,8 +25,8 @@ export function useCategorias(tipo?: string) {
     setLoading(false);
   };
 
-  const addCategoria = async (categoria: any) => {
-    const { error } = await createCategoria(categoria);
+  const addCategoria = async (nombre: string, tipo: string) => {
+    const { error } = await createCategoria(nombre, tipo);
     if (!error) fetchCategorias();
   };
 
@@ -35,8 +35,9 @@ export function useCategorias(tipo?: string) {
     if (!error) fetchCategorias();
   };
 
-  const editCategoria = async (id: string, data: any) => {
-    const { error } = await updateCategoria(id, data);
+  const editCategoria = async (id: string, nombre: string, tipo:string) => {
+    const { error } = await updateCategoria(id, nombre, tipo);
+    console.log(error);
     if (!error) fetchCategorias();
   };
 
