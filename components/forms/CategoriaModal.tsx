@@ -111,13 +111,11 @@ export default function CategoriaModal({
                                 onPress={handleSave}
                                 disabled={loading}
                             >
-                                {loading ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) : (
-                                    <Text style={{ color: "#fff" }}>
-                                        Guardar
-                                    </Text>
-                                )}
+
+                                <Text style={{ color: "#fff" }}>
+                                    Guardar
+                                </Text>
+
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>

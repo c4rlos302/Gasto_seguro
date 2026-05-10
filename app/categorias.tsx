@@ -1,14 +1,18 @@
-import { CardContainer, CardView } from '@/components/ui/Card'
-import { StyleSheet, Text, TouchableOpacity, Pressable, ScrollView, View, Alert } from "react-native"
+import {
+    StyleSheet, Text, TouchableOpacity, Pressable,
+    ScrollView, View, Alert
+} from "react-native"
 import { Ionicons } from "@expo/vector-icons";
-import Header from '@/components/ui/Header'
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useFocusEffect } from "expo-router";
 import { useCategorias } from '@/src/hooks/useCategorias';
 import CategoriaModal from '@/components/forms/CategoriaModal';
+import Header from '@/components/ui/Header'
+import { CardContainer, CardView } from '@/components/ui/Card'
 import { Loader } from '@/components/loader';
-
 export default function Categorias() {
-    const { categorias, addCategoria, editCategoria, removeCategoria } = useCategorias();
+
+    const { categorias, fetchCategorias, addCategoria, editCategoria, removeCategoria } = useCategorias();
 
     const categoriasGasto = categorias?.filter(
         (cat: any) => cat.tipo === "gasto"
@@ -22,6 +26,20 @@ export default function Categorias() {
     const [modalVisible, setModalVisible] = useState(false);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any | null>(null);
     const [modoEdicion, setModoEdicion] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            const cargarDatos = async () => {
+                setLoading(true);
+                await Promise.all([
+                    fetchCategorias(),
+                ]);
+                setLoading(false);
+            };
+
+            cargarDatos();
+        }, [])
+    );
 
     const guardarCategoria = async (
         nombre: string,
@@ -37,16 +55,13 @@ export default function Categorias() {
         }
 
         setLoading(false);
-
         setModalVisible(false);
-
         setModoEdicion(false);
-
         setCategoriaSeleccionada(null);
     };
 
     const eliminarCategoria = async () => {
-        if(categoriaSeleccionada){
+        if (categoriaSeleccionada) {
             setLoading(true);
             removeCategoria(categoriaSeleccionada.id);
             setLoading(false);
@@ -58,7 +73,7 @@ export default function Categorias() {
 
     return (
         <CardContainer>
-            <Header title="Categorias" regresar="true"/>
+            <Header title="Categorias" regresar="true" />
             <CardView>
                 <Text style={styles.label}>Tipo Gasto:</Text>
                 <ScrollView style={{ maxHeight: 125 }}>
@@ -134,8 +149,8 @@ export default function Categorias() {
                 </TouchableOpacity>
             </CardView>
             <CardView>
-                <TouchableOpacity 
-                    style={styles.option} 
+                <TouchableOpacity
+                    style={styles.option}
                     disabled={!categoriaSeleccionada}
                     onPress={eliminarCategoria}
                 >

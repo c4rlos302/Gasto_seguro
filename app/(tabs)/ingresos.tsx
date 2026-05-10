@@ -159,7 +159,7 @@ export default function addIngresos() {
           onPress={guardarIngreso}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Guardando..." : "Guardar Ingreso"}
+            {"Guardar Ingreso"}
           </Text>
         </TouchableOpacity>
       </CardView>

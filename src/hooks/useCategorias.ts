@@ -37,7 +37,6 @@ export function useCategorias(tipo?: string) {
 
   const editCategoria = async (id: string, nombre: string, tipo:string) => {
     const { error } = await updateCategoria(id, nombre, tipo);
-    console.log(error);
     if (!error) fetchCategorias();
   };
 

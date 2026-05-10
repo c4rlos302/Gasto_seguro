@@ -167,7 +167,7 @@ export default function addGastos() {
           onPress={guardarGasto}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Guardando..." : "Guardar gasto"}
+            {"Guardar gasto"}
           </Text>
         </TouchableOpacity>
 
