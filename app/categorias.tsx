@@ -5,7 +5,6 @@ import Header from '@/components/ui/Header'
 import React, { useState } from 'react'
 import { useCategorias } from '@/src/hooks/useCategorias';
 import CategoriaModal from '@/components/forms/CategoriaModal';
-import { router } from 'expo-router';
 import { Loader } from '@/components/loader';
 
 export default function Categorias() {
@@ -19,8 +18,8 @@ export default function Categorias() {
         (cat: any) => cat.tipo === "ingreso"
     );
 
-    const [modalVisible, setModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any | null>(null);
     const [modoEdicion, setModoEdicion] = useState(false);
 

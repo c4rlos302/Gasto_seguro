@@ -1,5 +1,9 @@
-import { useState } from 'react'
-import { Text, View, Pressable, TextInput, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native'
+import { useState, useCallback } from 'react'
+import {
+  Text, View, Pressable, TextInput, StyleSheet, Alert,
+  ScrollView, TouchableOpacity
+} from 'react-native'
+import { useFocusEffect } from 'expo-router'
 import { Loader } from '../../components/loader'
 import Header from '../../components/ui/Header'
 import { CardContainer, CardView } from '../../components/ui/Card'
@@ -8,17 +12,33 @@ import { Ionicons } from '@expo/vector-icons'
 import { useCategorias } from '../../src/hooks/useCategorias'
 import { useMovimientos } from '../../src/hooks/useMovimientos'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import CategoriaModal from '@/components/forms/CategoriaModal'
 
 export default function addIngresos() {
-  const { categorias } = useCategorias("ingreso");
+  const { categorias, fetchCategorias, addCategoria } = useCategorias("ingreso");
   const { addMovimiento } = useMovimientos();
 
   const [monto, setMonto] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [categoriaId, setCategoriaId] = useState("");
   const [fecha, setFecha] = useState<Date | null>(null);
   const [show, setShow] = useState(false);
+  const [categoriaId, setCategoriaId] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const cargarDatos = async () => {
+        setLoading(true);
+        await Promise.all([
+          fetchCategorias(),
+        ]);
+        setLoading(false);
+      };
+
+      cargarDatos();
+    }, [])
+  );
 
   const guardarIngreso = async () => {
     if (!monto) {
@@ -54,7 +74,18 @@ export default function addIngresos() {
     setDescripcion("");
     Alert.alert("Éxito", "Ingreso registrado");
     router.back();
-  }
+  };
+
+  const guardarCategoria = async (
+        nombre: string,
+        tipo: "gasto" | "ingreso"
+    ) => {
+      setLoading(true);
+      await addCategoria(nombre, tipo);
+      setModalVisible(false);
+      setLoading(false);
+  };
+
   return (
     <CardContainer>
       <Header title="Agregar ingreso" regresar="true" />
@@ -87,7 +118,7 @@ export default function addIngresos() {
 
         <Text style={styles.label}>Categoría</Text>
 
-        <ScrollView style={{maxHeight: 125}}>
+        <ScrollView style={{ maxHeight: 125 }}>
           <View style={styles.categorias}>
             {categorias.map((cat: any) => (
               <Pressable
@@ -106,7 +137,10 @@ export default function addIngresos() {
             ))}
             <TouchableOpacity
               style={styles.categoria}
-              onPress={() => { setCategoriaId(""); Alert.alert("Crear categoria", "Ir a crear categoria") }}>
+              onPress={() => { 
+                setCategoriaId("");
+                setModalVisible(true);
+              }}>
               <Text style={styles.text}>Otra</Text>
             </TouchableOpacity>
           </View>
@@ -129,6 +163,17 @@ export default function addIngresos() {
           </Text>
         </TouchableOpacity>
       </CardView>
+      <CategoriaModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+        }}
+        onSave={guardarCategoria}
+        modoEdicion={false}
+        loading={loading}
+        activo={false}
+        tipoCategoria="ingreso"
+      />
       <Loader visible={loading} />
     </CardContainer>
   )

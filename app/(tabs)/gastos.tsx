@@ -1,7 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Alert,
   Pressable,
@@ -12,22 +11,39 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { Loader } from "../../components/loader";
 import { CardContainer, CardView } from "../../components/ui/Card";
 import Header from "../../components/ui/Header";
 import { useCategorias } from "../../src/hooks/useCategorias";
 import { useMovimientos } from "../../src/hooks/useMovimientos";
+import CategoriaModal from "@/components/forms/CategoriaModal";
 
 export default function addGastos() {
-  const { categorias } = useCategorias("gasto");
+  const { categorias, fetchCategorias, addCategoria } = useCategorias("gasto");
   const { addMovimiento } = useMovimientos();
 
   const [monto, setMonto] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [categoriaId, setCategoriaId] = useState("");
   const [fecha, setFecha] = useState<Date | null>(null);
   const [show, setShow] = useState(false);
+  const [categoriaId, setCategoriaId] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const cargarDatos = async () => {
+        setLoading(true);
+        await Promise.all([
+          fetchCategorias(),
+        ]);
+        setLoading(false);
+      };
+
+      cargarDatos();
+    }, [])
+  );
 
   const guardarGasto = async () => {
     if (!monto) {
@@ -63,6 +79,16 @@ export default function addGastos() {
     setDescripcion("");
     Alert.alert("Éxito", "Gasto registrado");
     router.back();
+  };
+
+  const guardarCategoria = async (
+        nombre: string,
+        tipo: "gasto" | "ingreso"
+    ) => {
+      setLoading(true);
+      await addCategoria(nombre, tipo);
+      setModalVisible(false);
+      setLoading(false);
   };
 
   return (
@@ -101,28 +127,31 @@ export default function addGastos() {
 
         <Text style={styles.label}>Categoría</Text>
 
-        <ScrollView style={{maxHeight: 125}}>
-        <View style={styles.categorias}>
-          {categorias.map((cat: any) => (
-            <Pressable
-              key={cat.id}
-              style={[
-                styles.categoria,
-                categoriaId === cat.id && styles.categoriaActiva,
-              ]}
-              onPress={() => setCategoriaId(cat.id)}
-            >
-              <Text style={styles.text}>
-                {cat.nombre}
-              </Text>
-            </Pressable>
-          ))}
-          <TouchableOpacity 
-            style={styles.categoria}
-            onPress={() => {setCategoriaId(""); Alert.alert("Crear categoria", "Ir a crear categoria")}}>
-            <Text style={styles.text}>Otra</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView style={{ maxHeight: 125 }}>
+          <View style={styles.categorias}>
+            {categorias.map((cat: any) => (
+              <Pressable
+                key={cat.id}
+                style={[
+                  styles.categoria,
+                  categoriaId === cat.id && styles.categoriaActiva,
+                ]}
+                onPress={() => setCategoriaId(cat.id)}
+              >
+                <Text style={styles.text}>
+                  {cat.nombre}
+                </Text>
+              </Pressable>
+            ))}
+            <TouchableOpacity
+              style={styles.categoria}
+              onPress={() => {
+                setCategoriaId("");
+                setModalVisible(true);
+              }}>
+              <Text style={styles.text}>Otra</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
 
         <Text style={styles.label}>Descripción</Text>
@@ -143,6 +172,17 @@ export default function addGastos() {
         </TouchableOpacity>
 
       </CardView>
+      <CategoriaModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+        }}
+        onSave={guardarCategoria}
+        modoEdicion={false}
+        loading={loading}
+        activo={false}
+        tipoCategoria="gasto"
+      />
       <Loader visible={loading} />
     </CardContainer>
   );

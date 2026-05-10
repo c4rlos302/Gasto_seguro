@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
-export default function Header({ title, regresar }: any) {
+export default function Header({ title, regresar, right }: any) {
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, regresar && {height:125}, right && styles.headerSettings]}>
 
       {
         regresar && (
@@ -15,8 +15,12 @@ export default function Header({ title, regresar }: any) {
           </View>)
       }
 
-      <Text style={styles.title}>{title}</Text>
-
+      <Text style={[styles.title, right && styles.titleSettings]}>{title}</Text>
+      {
+        right && (
+          <View>{right}</View>
+        )
+      }
     </View>
   );
 }
@@ -33,10 +37,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 8,
   },
+  headerSettings: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:"space-between",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#fff",
+  },
+  titleSettings: {
+    flex: 1,
+    marginLeft: 10,
   },
   regresar: {
     flexDirection: "row",
