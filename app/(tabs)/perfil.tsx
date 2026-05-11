@@ -1,15 +1,14 @@
-import * as ImagePicker from "expo-image-picker";
-import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { useUser } from '../../src/hooks/useUser';
-import { logout } from '../../src/services/auth.service';
 import { Loader } from "@/components/loader";
-import { StyleSheet } from 'react-native';
 import { CardContainer, CardView } from "@/components/ui/Card";
 import Header from "@/components/ui/Header";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useUser } from '../../src/hooks/useUser';
+import { logout } from '../../src/services/auth.service';
 
 
 export default function PerfilScreen() {
@@ -60,25 +59,17 @@ export default function PerfilScreen() {
         </CardView>
 
         <CardView>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("EditarDatos")}>
+          <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_perfil")}>
             <Ionicons name="person-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Editar datos personales</Text>
+            <Text style={styles.optionText}>Editar perfil</Text>
             <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
           </TouchableOpacity>
         </CardView>
 
         <CardView>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("CambiarPassword")}>
-            <Ionicons name="lock-closed-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Cambiar contraseña</Text>
-            <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
-          </TouchableOpacity>
-        </CardView>
-
-        <CardView>
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate("Configuracion")}>
+          <TouchableOpacity style={styles.option} onPress={() => router.push("/configuracion")}>
             <Ionicons name="settings-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Configurar preferencias</Text>
+            <Text style={styles.optionText}>Configuración</Text>
             <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
           </TouchableOpacity>
         </CardView>
