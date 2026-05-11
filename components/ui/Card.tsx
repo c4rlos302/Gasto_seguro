@@ -4,8 +4,8 @@ export function CardContainer({ children }: any) {
   return <View style={styles.cardContainer}>{children}</View>;
 }
 
-export function CardView({ children }: any) {
-  return <View style={styles.cardView}>{children}</View>
+export function CardView({ children, style }: any) {
+  return <View style={[styles.cardView, style]}>{children}</View>
 }
 
 const styles = StyleSheet.create({

@@ -39,34 +39,6 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="gastos"
-        options={{
-          title: "Gastos",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "card" : "card-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="ingresos"
-        options={{
-          title: "Ingresos",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "trending-up" : "trending-up-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
         name="reportes"
         options={{
           title: "Reportes",

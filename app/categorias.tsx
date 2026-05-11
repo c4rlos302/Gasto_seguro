@@ -61,19 +61,37 @@ export default function Categorias() {
     };
 
     const eliminarCategoria = async () => {
-        if (categoriaSeleccionada) {
-            setLoading(true);
-            removeCategoria(categoriaSeleccionada.id);
-            setLoading(false);
-            setCategoriaSeleccionada(null);
-            Alert.alert("Completado", "Elemento borrado con exito");
-
+        if (!categoriaSeleccionada) {
+            return;
         }
+        Alert.alert(
+            "Eliminar categoría",
+            `¿Estas seguro de eliminar la categoría ${categoriaSeleccionada.nombre}?`,
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel",
+                    onPress: () => { setCategoriaSeleccionada(null); }
+                },
+                {
+                    text: "Eliminar",
+                    style: "destructive",
+                    onPress: async () => {
+                        setLoading(true);
+                        await removeCategoria(categoriaSeleccionada.id);
+                        setCategoriaSeleccionada(null);
+                        setLoading(false);
+                        Alert.alert("Completado", "Elemento borrado con exito");
+                    }
+                }
+            ]
+        )
+
     }
 
     return (
         <CardContainer>
-            <Header title="Categorias" regresar="true" />
+            <Header title="Categorias" regresar />
             <CardView>
                 <Text style={styles.label}>Tipo Gasto:</Text>
                 <ScrollView style={{ maxHeight: 125 }}>

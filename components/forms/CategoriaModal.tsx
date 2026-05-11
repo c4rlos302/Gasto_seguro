@@ -7,7 +7,6 @@ import {
     StyleSheet,
     TouchableWithoutFeedback,
     Alert,
-    ActivityIndicator,
 } from 'react-native';
 
 import { useEffect, useState } from 'react';
@@ -40,7 +39,7 @@ export default function CategoriaModal({
     const [tipo, setTipo] = useState<'gasto' | 'ingreso'>(
         'gasto');
 
-    const handleSave = () => {
+    const guardar = () => {
         if (!nombre.trim()) {
             Alert.alert("Error", "Escribe un nombre a la categoría")
             return;
@@ -72,10 +71,10 @@ export default function CategoriaModal({
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <TouchableWithoutFeedback onPress={onClose}>
-                <View style={styles.overlay}>
+                <View style={styles.fondo}>
                     <TouchableWithoutFeedback>
-                        <View style={styles.container}>
-                            <Text style={styles.title}>
+                        <View style={styles.contenedor}>
+                            <Text style={styles.tituloModal}>
                                 {modoEdicion
                                     ? "Editar Categoría"
                                     : "Nueva Categoría"}
@@ -88,10 +87,10 @@ export default function CategoriaModal({
                                 style={styles.input}
                             />
 
-                            <View style={styles.buttons}>
+                            <View style={styles.botones}>
                                 <TouchableOpacity
                                     disabled={!activo}
-                                    style={[styles.tipoBtn, tipo === 'gasto' && styles.tipoBtnActivo]}
+                                    style={[styles.botonTipo, tipo === 'gasto' && styles.botonTipoActivo]}
                                     onPress={() => setTipo('gasto')}
                                 >
                                     <Text>Gasto</Text>
@@ -99,7 +98,7 @@ export default function CategoriaModal({
 
                                 <TouchableOpacity
                                     disabled={!activo}
-                                    style={[styles.tipoBtn, tipo === 'ingreso' && styles.tipoBtnActivo]}
+                                    style={[styles.botonTipo, tipo === 'ingreso' && styles.botonTipoActivo]}
                                     onPress={() => setTipo('ingreso')}
                                 >
                                     <Text>Ingreso</Text>
@@ -107,8 +106,8 @@ export default function CategoriaModal({
                             </View>
 
                             <TouchableOpacity
-                                style={styles.saveBtn}
-                                onPress={handleSave}
+                                style={styles.botonGuardar}
+                                onPress={guardar}
                                 disabled={loading}
                             >
 
@@ -126,21 +125,21 @@ export default function CategoriaModal({
 }
 
 const styles = StyleSheet.create({
-    overlay: {
+    fondo: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'center',
         padding: 20,
     },
 
-    container: {
+    contenedor: {
         backgroundColor: '#fff',
         padding: 20,
         borderRadius: 20,
         gap: 15,
     },
 
-    title: {
+    tituloModal: {
         fontSize: 20,
         fontWeight: 'bold',
     },
@@ -152,12 +151,12 @@ const styles = StyleSheet.create({
         padding: 12,
     },
 
-    buttons: {
+    botones: {
         flexDirection: 'row',
         gap: 10,
     },
 
-    tipoBtn: {
+    botonTipo: {
         flex: 1,
         padding: 12,
         backgroundColor: '#eee',
@@ -165,11 +164,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    tipoBtnActivo: {
+    botonTipoActivo: {
         backgroundColor: "#AACDDC",
     },
 
-    saveBtn: {
+    botonGuardar: {
         backgroundColor: '#81A6C6',
         padding: 14,
         borderRadius: 12,
