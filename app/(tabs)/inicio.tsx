@@ -1,23 +1,43 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text, View, ScrollView } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import Header from "@/components/ui/Header";
 import { CardContainer, CardView } from "@/components/ui/Card";
 import FlashListMovimientos from "@/components/FlashListMovimientos";
+import { Loader } from "@/components/loader";
 
 import { useUser } from "@/src/hooks/useUser";
 import { useMovimientos } from "@/src/hooks/useMovimientos";
 import MovimientoModal from "@/components/forms/MovimientoModal";
 
+
 export default function Inicio() {
   const { usuario } = useUser();
-  const { movimientos } = useMovimientos();
+  const { movimientos, fetchMovimientos } = useMovimientos();
 
-  const movimientosRecientes = movimientos.slice(0, 5);
+  useFocusEffect(
+    useCallback(() => {
+      const cargarDatos = async () => {
+        setLoading(true);
+        await Promise.all([
+          fetchMovimientos(),
+        ]);
+        setLoading(false);
+      };
+
+      cargarDatos();
+    }, [])
+  );
+
   const [modalMovimiento, setModalMovimiento] = useState(false);
   const [tipoMovimiento, setTipoMovimiento] = useState<"gasto" | "ingreso">("gasto");
+  const [loading, setLoading] = useState(false);
+
+  const movimientosRecientes = useMemo(() => {
+    return movimientos.slice(0, 5);
+  }, [movimientos]);
 
   const balance = useMemo(() => {
     return movimientos.reduce((acc: number, mov: any) => {
@@ -60,24 +80,24 @@ export default function Inicio() {
         <CardView style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Balance total</Text>
           <Text style={styles.balance}>
-            ${balance.toLocaleString("es-MX", {minimumFractionDigits: 2})}
+            ${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
           </Text>
         </CardView>
 
         <View style={styles.resumenContainer}>
           <CardView style={styles.resumenCard}>
-            <Ionicons name="trending-up" size={28} color="#10B981" />
-            <Text style={styles.resumenLabel}>Ingresos</Text>
-            <Text style={styles.ingreso}>
-              ${ingresosMes.toLocaleString("es-MX", {minimumFractionDigits: 2})}
+            <Ionicons name="card" size={28} color="#EF4444" />
+            <Text style={styles.resumenLabel}>Gastos</Text>
+            <Text style={styles.gasto}>
+              ${gastosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
 
           <CardView style={styles.resumenCard}>
-            <Ionicons name="card" size={28} color="#EF4444" />
-            <Text style={styles.resumenLabel}>Gastos</Text>
-            <Text style={styles.gasto}>
-              ${gastosMes.toLocaleString("es-MX", {minimumFractionDigits: 2})}
+            <Ionicons name="trending-up" size={28} color="#10B981" />
+            <Text style={styles.resumenLabel}>Ingresos</Text>
+            <Text style={styles.ingreso}>
+              ${ingresosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
         </View>
@@ -152,9 +172,15 @@ export default function Inicio() {
 
       <MovimientoModal
         visible={modalMovimiento}
-        onClose={() => setModalMovimiento(false)}
+        onClose={() => {
+          setModalMovimiento(false);
+          fetchMovimientos();
+          movimientosRecientes;
+          
+        }}
         tipoInicial={tipoMovimiento}
       />
+      <Loader visible={loading} />
     </CardContainer>
   );
 }
