@@ -173,10 +173,7 @@ export default function Inicio() {
       <MovimientoModal
         visible={modalMovimiento}
         onClose={() => {
-          setModalMovimiento(false);
-          fetchMovimientos();
-          movimientosRecientes;
-          
+          setModalMovimiento(false);          
         }}
         tipoInicial={tipoMovimiento}
       />

@@ -29,7 +29,7 @@ export default function MovimientoModal({
     tipoInicial,
 }: Props) {
     const { categorias, fetchCategorias, addCategoria } = useCategorias();
-    const { addMovimiento, editMovimiento } = useMovimientos();
+    const { addMovimiento, editMovimiento, fetchMovimientos } = useMovimientos();
 
     const [loading, setLoading] = useState(false);
     const [monto, setMonto] = useState("");
@@ -110,7 +110,7 @@ export default function MovimientoModal({
         } else {
             await addMovimiento(data);
         }
-
+        await fetchMovimientos();
         setLoading(false);
         limpiarFormulario();
         onSuccess?.();
@@ -120,6 +120,7 @@ export default function MovimientoModal({
     const guardarCategoria = async (nombre: string, tipo: "gasto" | "ingreso") => {
         setLoading(true);
         await addCategoria(nombre, tipo);
+        await fetchCategorias();
         setModalCategoriasVisible(false);
         setLoading(false);
     };
