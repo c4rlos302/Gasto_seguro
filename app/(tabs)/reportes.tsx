@@ -11,6 +11,8 @@ import GastosCategoriaChart from "@/components/charts/GastosCategoriaChart";
 import IngresosGastosChart from "@/components/charts/IngresosGastosChart";
 import { useEstadisticas } from "@/src/hooks/useEstadisticas";
 import { useCategorias } from "@/src/hooks/useCategorias";
+import { exportarPDF } from "../../src/utils/exportarPDF";
+import { Ionicons } from "@expo/vector-icons";
 
 type Periodo = "hoy" | "semana" | "mes" | "anio" | "custom" | "todos";
 
@@ -57,7 +59,6 @@ export default function Reportes() {
   return movimientos.filter((m: any) => {
     const fechaMov = new Date(m.fecha);
 
-    // 🧠 PRIORIDAD: rango custom
     if (periodo === "custom" && fechaInicio && fechaFin) {
       let inicio = new Date(fechaInicio);
       let fin = new Date(fechaFin);
@@ -72,12 +73,10 @@ export default function Reportes() {
       return fechaMov >= inicio && fechaMov <= fin;
     }
 
-    // 📅 periodos normales
     if (inicioPeriodo) {
       return fechaMov >= inicioPeriodo;
     }
 
-    // 📌 "todos" o null => no filtra nada
     return true;
   });
 }, [movimientos, periodo, fechaInicio, fechaFin]);
@@ -86,7 +85,20 @@ export default function Reportes() {
 
   return (
     <CardContainer>
-      <Header title="Reportes y Gráficos" />
+      <Header title="Reportes y Gráficos" right={
+         <TouchableOpacity
+            onPress={() => 
+              exportarPDF(movimientosFiltrados, categorias, periodo, 
+                fechaInicio?.toLocaleDateString("es-MX"), fechaFin?.toLocaleDateString("es-MX"))
+            }
+          >
+            <Ionicons
+              name="arrow-redo-sharp"
+              size={20}
+              color="#fff"
+            />
+          </TouchableOpacity>
+      }/>
       <View style={styles.filtros}>
         <TouchableOpacity
           style={[styles.chip, periodo === "todos" && styles.chipActivo]}
