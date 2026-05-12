@@ -9,3 +9,7 @@ export const formatFecha = (fecha: string) => {
 
   return fechaLocal.toLocaleDateString("es-MX");
 };
+
+export const normalize = (d: Date) => {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}

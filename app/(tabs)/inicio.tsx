@@ -11,6 +11,8 @@ import { Loader } from "@/components/loader";
 import { useUser } from "@/src/hooks/useUser";
 import { useMovimientos } from "@/src/hooks/useMovimientos";
 import MovimientoModal from "@/components/forms/MovimientoModal";
+import IngresosGastosChart from "@/components/charts/IngresosGastosChart";
+import GastosCategoriaChart from "@/components/charts/GastosCategoriaChart";
 
 
 export default function Inicio() {
@@ -127,7 +129,12 @@ export default function Inicio() {
               <Text style={styles.textoAccionRapida}>Ingreso</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.accionRapida}>
+            <TouchableOpacity 
+              style={styles.accionRapida}
+              onPress={() => {
+                router.navigate("/(tabs)/presupuestos");
+              }}
+            >
               <Ionicons name="pie-chart" size={32} color="#81A6C6" />
               <Text style={styles.textoAccionRapida}>Presupuesto</Text>
             </TouchableOpacity>
@@ -147,13 +154,14 @@ export default function Inicio() {
         <CardView>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Reportes y gráficos</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              router.navigate("/(tabs)/reportes");
+            }}>
               <Text style={styles.link}>Ver más</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.chartPlaceholder}>
-            <Ionicons name="stats-chart" size={60} color="#D1D5DB" />
-            <Text style={styles.chartText}>Aquí irá tu gráfica</Text>
+            <GastosCategoriaChart movimientos={movimientos} title={false} />
           </View>
         </CardView>
 
@@ -278,7 +286,6 @@ const styles = StyleSheet.create({
   chartPlaceholder: {
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 40,
   },
 
   chartText: {

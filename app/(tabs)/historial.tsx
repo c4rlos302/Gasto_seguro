@@ -1,7 +1,6 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
-  Text, View, StyleSheet, TouchableOpacity, Modal, TextInput,
-  Pressable, TouchableWithoutFeedback,
+  Text, View, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback,
   Alert
 } from "react-native";
 import { useFocusEffect } from 'expo-router';
@@ -13,7 +12,6 @@ import { useCategorias } from '@/src/hooks/useCategorias';
 import { Loader } from '@/components/loader';
 import FlashListMovimientos from '@/components/FlashListMovimientos';
 import { Movimiento } from '@/src/types/movimiento';
-import { BotonAccion } from '@/components/ui/Button';
 import FiltroMovimientosModal from '@/components/forms/FiltroMovimientosModal';
 import MovimientoModal from '@/components/forms/MovimientoModal';
 
