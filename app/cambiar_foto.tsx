@@ -5,36 +5,17 @@ import Header from "@/components/ui/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function EditarPerfil() {
+export default function CambiarFoto() {
 
   return (
-
+    
     <CardContainer>
-        <Header
-        title="Editar perfil"
+         <Header
+        title="Cambiar foto dde perfil"
         regresar={true}
       />
-       <CardView>
-                <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_nombre")}>
-                  <Text style={styles.optionText}>Editar nombre</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
-                </TouchableOpacity>
-        </CardView>
-      
-        <CardView>
-                <TouchableOpacity style={styles.option} onPress={() => router.push("/email")}>
-                  <Text style={styles.optionText}>Email</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
-                </TouchableOpacity>
-          </CardView>
 
-          <CardView>
-                <TouchableOpacity style={styles.option} onPress={() => router.push("/cambiar_foto")}>
-                  <Text style={styles.optionText}>Cambiar foto de perfil</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
-                </TouchableOpacity>
-          </CardView>
-      
+    
     </CardContainer>
   );
 }

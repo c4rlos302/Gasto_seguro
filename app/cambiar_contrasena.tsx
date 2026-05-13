@@ -5,9 +5,43 @@ import Header from "@/components/ui/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from 'react';
 import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/src/services/supabase";
 import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
 
+
 export default function CambiarContrasena() {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChangePassword = async () => {
+  if (!password || !confirmPassword) {
+    Alert.alert("Error", "Llena todos los campos");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    Alert.alert("Error", "Las contraseñas no coinciden");
+    return;
+  }
+
+  setLoading(true);
+
+  const { error } = await supabase.auth.updateUser({
+    password: password,
+  });
+
+  setLoading(false);
+
+  if (error) {
+    Alert.alert("Error", error.message);
+    return;
+  }
+
+  Alert.alert("Éxito", "Contraseña actualizada");
+
+  router.back();
+};
  
   return (
     
@@ -26,6 +60,8 @@ export default function CambiarContrasena() {
           secureTextEntry
           placeholder="Nueva contraseña"
           style={styles.input}
+          value={password}
+          onChangeText={setPassword}
         />
 
         <Text style={styles.label}>
@@ -36,13 +72,17 @@ export default function CambiarContrasena() {
           secureTextEntry
           placeholder="Confirmar contraseña"
           style={styles.input}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleChangePassword}
+          disabled={loading}
         >
           <Text style={styles.buttonText}>
-            Guardar contraseña
+            {loading ? "Guardando..." : "Guardar contraseña"}
           </Text>
         </TouchableOpacity>
       </CardView>
@@ -95,7 +135,7 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
   },
  button: {
-    backgroundColor: "#AACDDC",
+    backgroundColor: "#547792",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",

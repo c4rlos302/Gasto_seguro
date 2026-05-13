@@ -7,6 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { supabase } from "../../src/services/supabase";
 import { useUser } from '../../src/hooks/useUser';
 import { logout } from '../../src/services/auth.service';
 
@@ -17,18 +18,58 @@ export default function PerfilScreen() {
 
   const [avatar, setAvatar] = useState(usuario?.avatar_url || null);
 
-  async function pickImage() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+async function pickImage() {
 
-    if (!result.canceled) {
-      setAvatar(result.assets[0].uri);
+  if (!usuario?.id) return;
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+  });
+
+  if (result.canceled) return;
+
+  try {
+
+    const image = result.assets[0];
+
+    const response = await fetch(image.uri);
+    const blob = await response.blob();
+
+    const fileName = `${usuario.id}-${Date.now()}.jpg`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(fileName, blob, {
+        contentType: "image/jpeg",
+      });
+
+    if (uploadError) {
+      console.log(uploadError);
+      return;
     }
+
+    const { data } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    const publicUrl = data.publicUrl;
+
+    await supabase
+      .from("usuarios")
+      .update({
+        avatar_url: publicUrl
+      })
+      .eq("id", usuario.id);
+
+    setAvatar(publicUrl);
+
+  } catch (error) {
+    console.log(error);
   }
+}
   const cerrarSesion = async () => {
     if (loading) return;
 
@@ -61,7 +102,7 @@ export default function PerfilScreen() {
         <CardView>
           <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_perfil")}>
             <Ionicons name="person-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Editar perfil</Text>
+            <Text style={styles.optionText}>Editar datos</Text>
             <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
           </TouchableOpacity>
         </CardView>
@@ -145,7 +186,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   button: {
-    backgroundColor: "#AACDDC",
+    backgroundColor: "#213448",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
