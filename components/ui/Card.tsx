@@ -1,41 +1,17 @@
 import { View, StyleSheet } from "react-native";
 import { useTheme } from "@/src/context/ThemeContext";
-import { lightColors, darkColors } from "@/constants/theme"; 
+import { lightColors, darkColors } from "@/constants/theme";
 
-// Contenedor principal (pantallas enteras)
-export function CardContainer({ children, style }: any) {
+export function CardContainer({ children }: any) {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
-
-  return (
-    <View style={[styles.cardContainer, { backgroundColor: colors.background }, style]}>
-      {children}
-    </View>
-  );
+  return <View style={[styles.cardContainer, {backgroundColor: colors.fondo}]}>{children}</View>;
 }
 
-// Vista de tarjeta (bloques dentro de pantallas)
 export function CardView({ children, style }: any) {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
-
-  return (
-    <View style={[styles.cardView, { backgroundColor: colors.card }, style]}>
-      {children}
-    </View>
-  );
-}
-
-// Tarjeta simple reutilizable
-export default function Card({ children, style }: any) {
-  const { isDark } = useTheme();
-  const colors = isDark ? darkColors : lightColors;
-
-  return (
-    <View style={[styles.card, { backgroundColor: colors.card }, style]}>
-      {children}
-    </View>
-  );
+  return <View style={[styles.cardView, {backgroundColor: colors.secundario} ,style]}>{children}</View>
 }
 
 const styles = StyleSheet.create({
@@ -47,10 +23,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 15,
     borderRadius: 20,
-    width: "auto",
-  },
-  card: {
-    borderRadius: 8,
-    padding: 10,
-  },
+    width: "auto"
+  }
 });

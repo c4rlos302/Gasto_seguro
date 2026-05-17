@@ -3,40 +3,29 @@ import { router } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useTheme } from "@/src/context/ThemeContext";
 import { lightColors, darkColors } from "@/constants/theme";
+import { Colors } from "@/constants/colors";
 
 export default function Header({ title, regresar, right }: any) {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
-
   return (
-    
-    <View
-      style={[
-        styles.header,
-        { backgroundColor: colors.card },
-        regresar && { height: 125 },
-        right && styles.headerSettings,
-      ]}
-    >
-      {regresar && (
-        <View style={styles.regresar}>
-          <Pressable onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </Pressable>
-        </View>
-      )}
+    <View style={[styles.header, {backgroundColor: colors.principal} ,regresar && {height:125}, right && styles.headerSettings]}>
 
-      <Text
-        style={[
-          styles.title,
-          { color: colors.text },
-          right && styles.titleSettings,
-        ]}
-      >
-        {title}
-      </Text>
+      {
+        regresar && (
+          <View style={styles.regresar}>
+            <Pressable onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={Colors.blanco} />
+            </Pressable>
+          </View>)
+      }
 
-      {right && <View>{right}</View>}
+      <Text style={[styles.title, right && styles.titleSettings]}>{title}</Text>
+      {
+        right && (
+          <View>{right}</View>
+        )
+      }
     </View>
   );
 }
@@ -55,11 +44,12 @@ const styles = StyleSheet.create({
   headerSettings: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent:"space-between",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    color: Colors.blanco,
   },
   titleSettings: {
     flex: 1,

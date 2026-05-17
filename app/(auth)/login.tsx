@@ -4,8 +4,14 @@ import { login } from '../../src/services/auth.service';
 import { router } from 'expo-router';
 import { Loader } from '../../components/loader';
 import { StyleSheet } from 'react-native';
+import { darkColors, lightColors } from '@/constants/theme';
+import { useTheme } from '@/src/context/ThemeContext';
+import { CardContainer } from '@/components/ui/Card';
+import { Colors } from '@/constants/colors';
 
 export default function LoginScreen() {
+  const { isDark } = useTheme();
+  const colors = isDark ? darkColors : lightColors;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,80 +42,88 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <CardContainer style={{ position: "relative" }}>
+      <View style={[styles.container, { backgroundColor: colors.secundario }]}>
 
-      <Text style={styles.title}>Gasto Seguro</Text>
-      <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Gasto Seguro</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>Inicia sesión para continuar</Text>
 
-      <View style={styles.form}>
-        <TextInput
-          placeholder="Correo electrónico"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <View style={styles.form}>
+          <TextInput
+            placeholder="Correo electrónico"
+            placeholderTextColor={colors.text}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={
+              [styles.input,
+              { color: colors.text, backgroundColor: colors.fondo, borderColor: colors.principal }]
+            }
+          />
 
-        <TextInput
-          placeholder="Contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-        />
+          <TextInput
+            placeholder="Contraseña"
+            placeholderTextColor={colors.text}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={
+              [styles.input,
+              { color: colors.text, backgroundColor: colors.fondo, borderColor: colors.principal }]
+            }
+          />
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleLogin}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Cargando..." : "Ingresar"}
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.principal }, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Cargando..." : "Ingresar"}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-          <Text style={styles.link}>
-            ¿No tienes cuenta? Regístrate
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+            <Text style={[styles.link, { color: colors.link }]}>
+              ¿No tienes cuenta? Regístrate
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Loader visible={loading} />
       </View>
-
-      <Loader visible={loading} />
-    </View>
+    </CardContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#AACDDC',
+    inset: 0,
+    margin: "auto",
+    width: 350,
+    height: 365,
+    paddingHorizontal: 24,
+    paddingTop: 30,
+    borderRadius: 15,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#213448',
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
-    color: '#547792',
     marginBottom: 25,
   },
   form: {
     gap: 12,
   },
   input: {
-    backgroundColor: '#fff',
     padding: 14,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
   },
   button: {
-    backgroundColor: '#2563eb',
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',
@@ -119,7 +133,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.blanco,
     fontWeight: '600',
     fontSize: 16,
   },

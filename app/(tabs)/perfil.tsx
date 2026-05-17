@@ -10,66 +10,72 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from "../../src/services/supabase";
 import { useUser } from '../../src/hooks/useUser';
 import { logout } from '../../src/services/auth.service';
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
+import { Colors } from "@/constants/colors";
 
 
 export default function PerfilScreen() {
+  const { isDark } = useTheme();
+  const colors = isDark ? darkColors : lightColors;
+
   const { usuario } = useUser();
   const [loading, setLoading] = useState(false);
 
   const [avatar, setAvatar] = useState(usuario?.avatar_url || null);
 
-async function pickImage() {
+  async function pickImage() {
 
-  if (!usuario?.id) return;
+    if (!usuario?.id) return;
 
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 1,
-  });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
 
-  if (result.canceled) return;
+    if (result.canceled) return;
 
-  try {
+    try {
 
-    const image = result.assets[0];
+      const image = result.assets[0];
 
-    const response = await fetch(image.uri);
-    const blob = await response.blob();
+      const response = await fetch(image.uri);
+      const blob = await response.blob();
 
-    const fileName = `${usuario.id}-${Date.now()}.jpg`;
+      const fileName = `${usuario.id}-${Date.now()}.jpg`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(fileName, blob, {
-        contentType: "image/jpeg",
-      });
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, blob, {
+          contentType: "image/jpeg",
+        });
 
-    if (uploadError) {
-      console.log(uploadError);
-      return;
+      if (uploadError) {
+        console.log(uploadError);
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      const publicUrl = data.publicUrl;
+
+      await supabase
+        .from("usuarios")
+        .update({
+          avatar_url: publicUrl
+        })
+        .eq("id", usuario.id);
+
+      setAvatar(publicUrl);
+
+    } catch (error) {
+      console.log(error);
     }
-
-    const { data } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(fileName);
-
-    const publicUrl = data.publicUrl;
-
-    await supabase
-      .from("usuarios")
-      .update({
-        avatar_url: publicUrl
-      })
-      .eq("id", usuario.id);
-
-    setAvatar(publicUrl);
-
-  } catch (error) {
-    console.log(error);
   }
-}
   const cerrarSesion = async () => {
     if (loading) return;
 
@@ -82,47 +88,52 @@ async function pickImage() {
   return (
     <CardContainer>
       <Header title="Mi perfil" />
-      <View style={{padding: 10}}>
+      <View style={{ padding: 10 }}>
         <CardView>
           <View style={styles.avatarContainer}>
             {avatar ? (
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
-              <Ionicons name="person-circle-outline" size={100} color="#9ca3af" />
+              <Ionicons name="person-circle-outline" size={100} color={colors.chip} />
             )}
-            <TouchableOpacity style={styles.cameraIcon} onPress={pickImage}>
-              <Ionicons name="camera-outline" size={22} color="#fff" />
+            <TouchableOpacity style={[styles.cameraIcon, { backgroundColor: colors.principal }]} onPress={pickImage}>
+              <Ionicons name="camera-outline" size={22} color={Colors.blanco} />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.label}>Nombre: {usuario?.nombre}</Text>
-          <Text style={styles.label}>Email: {usuario?.correo}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Nombre: {usuario?.nombre}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Email: {usuario?.correo}</Text>
         </CardView>
 
         <CardView>
           <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_perfil")}>
-            <Ionicons name="person-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Editar datos</Text>
-            <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
+            <Ionicons name="person" size={20} color={Colors.principalLight} />
+            <Text style={[styles.optionText, { color: colors.text }]}>Editar datos</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
           </TouchableOpacity>
         </CardView>
 
         <CardView>
           <TouchableOpacity style={styles.option} onPress={() => router.push("/configuracion")}>
-            <Ionicons name="settings-outline" size={20} color="#81A6C6" />
-            <Text style={styles.optionText}>Configuración</Text>
-            <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
+            <Ionicons name="settings" size={20} color={Colors.principalLight} />
+            <Text style={[styles.optionText, { color: colors.text }]}>Configuración</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
           </TouchableOpacity>
         </CardView>
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={cerrarSesion}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Cerrando..." : "Cerrar sesión"}
-          </Text>
-        </TouchableOpacity>
+        <View style={{ display: "flex", alignItems: "center", marginTop: 10 }}>
+          <TouchableOpacity
+            style={
+              [styles.button,
+              { backgroundColor: colors.principal }, loading && styles.buttonDisabled]
+            }
+            onPress={cerrarSesion}
+          >
+            <Text style={[styles.buttonText, { color: Colors.blanco }]}>
+              {loading ? "Cerrando..." : "Cerrar sesión"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <Loader visible={loading} />
       </View>
@@ -181,12 +192,13 @@ const styles = StyleSheet.create({
   cameraIcon: {
     bottom: 40,
     right: -25,
-    backgroundColor: "#AACDDC",
     borderRadius: 20,
     padding: 5,
+    borderWidth: 1,
+    borderColor: Colors.blanco,
   },
   button: {
-    backgroundColor: "#213448",
+    width: "94%",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -197,7 +209,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: "#fff",
     fontWeight: "600",
   },
 });

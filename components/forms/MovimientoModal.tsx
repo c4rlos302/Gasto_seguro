@@ -10,6 +10,8 @@ import { useCategorias } from "@/src/hooks/useCategorias";
 import { useMovimientos } from "@/src/hooks/useMovimientos";
 import { Loader } from "../loader";
 import CategoriaModal from "./CategoriaModal";
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
 
 interface Props {
     visible: boolean;
@@ -28,6 +30,8 @@ export default function MovimientoModal({
     modoEdicion = false,
     tipoInicial,
 }: Props) {
+    const { isDark } = useTheme();
+    const colors = isDark ? darkColors : lightColors;
     const { categorias, fetchCategorias, addCategoria } = useCategorias();
     const { addMovimiento, editMovimiento, fetchMovimientos } = useMovimientos();
 
@@ -130,45 +134,46 @@ export default function MovimientoModal({
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <TouchableWithoutFeedback onPress={onClose}>
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
                     <TouchableWithoutFeedback>
 
-                        <View style={styles.modal}>
-                            <Text style={styles.title}>
+                        <View style={[styles.modal, { backgroundColor: colors.fondo }]}>
+                            <Text style={[styles.title, { color: colors.text }]}>
                                 {modoEdicion ? "Editar movimiento" : "Nuevo movimiento"}
                             </Text>
 
-                            <Text style={styles.label}>Tipo</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Tipo</Text>
                             <View style={styles.tipos}>
                                 <TouchableOpacity
-                                    style={[styles.tipoBoton, tipo === "gasto" && styles.tipoActivo]}
+                                    style={[styles.tipoBoton, { backgroundColor: colors.chip }, tipo === "gasto" && { backgroundColor: colors.principal }]}
                                     onPress={() => setTipo("gasto")}
                                 >
-                                    <Text>Gasto</Text>
+                                    <Text style={{ color: colors.text }}>Gasto</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={[styles.tipoBoton, tipo === "ingreso" && styles.tipoActivo]}
+                                    style={[styles.tipoBoton, { backgroundColor: colors.chip }, tipo === "ingreso" && { backgroundColor: colors.principal }]}
                                     onPress={() => setTipo("ingreso")}
                                 >
-                                    <Text>Ingreso</Text>
+                                    <Text style={{ color: colors.text }}>Ingreso</Text>
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.label}>Monto</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Monto</Text>
                             <TextInput
                                 placeholder="Monto"
+                                placeholderTextColor={colors.text}
                                 keyboardType="numeric"
                                 value={monto}
                                 onChangeText={setMonto}
-                                style={styles.input}
+                                style={[styles.input, { borderColor: colors.principal, color: colors.text }]}
                             />
 
-                            <Text style={styles.label}>Fecha</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Fecha</Text>
                             <Pressable
-                                style={styles.input}
+                                style={[styles.input, { borderColor: colors.principal }]}
                                 onPress={() => setShow(true)}
                             >
-                                <Text>
+                                <Text style={{ color: colors.text }}>
                                     {fecha ? fecha.toLocaleDateString() : "Seleccionar fecha"}
                                 </Text>
                             </Pressable>
@@ -184,7 +189,7 @@ export default function MovimientoModal({
                                 />
                             )}
 
-                            <Text style={styles.label}>Categorías</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Categorías</Text>
                             <ScrollView
                                 style={{ maxHeight: 120 }}
                             >
@@ -194,40 +199,41 @@ export default function MovimientoModal({
                                             <Pressable
                                                 key={cat.id}
                                                 style={[
-                                                    styles.categoria,
+                                                    styles.categoria, { backgroundColor: colors.chip, borderColor: colors.principal },
                                                     categoriaId === cat.id &&
-                                                    styles.categoriaActiva
+                                                    { backgroundColor: colors.principal }
                                                 ]}
                                                 onPress={() => setCategoriaId(cat.id)}
                                             >
-                                                <Text>{cat.nombre}</Text>
+                                                <Text style={{ color: colors.text }}>{cat.nombre}</Text>
                                             </Pressable>
                                         )
                                     )}
                                     <TouchableOpacity
-                                        style={styles.categoria}
+                                        style={[styles.categoria, { backgroundColor: colors.chip, borderColor: colors.principal }]}
                                         onPress={() => {
                                             setCategoriaId("");
                                             setModalCategoriasVisible(true);
                                         }}>
-                                        <Text>Otra</Text>
+                                        <Text style={{ color: colors.text }}>Otra</Text>
                                     </TouchableOpacity>
                                 </View>
                             </ScrollView>
 
-                            <Text style={styles.label}>Descripción</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Descripción</Text>
                             <TextInput
                                 placeholder="Descripción"
+                                placeholderTextColor={colors.text}
                                 value={descripcion}
                                 onChangeText={setDescripcion}
-                                style={styles.input}
+                                style={[styles.input, { borderColor: colors.principal, color: colors.text }]}
                             />
 
                             <TouchableOpacity
-                                style={styles.button}
+                                style={[styles.button, {backgroundColor: colors.principal}]}
                                 onPress={guardarMovimiento}
                             >
-                                <Text style={styles.buttonText}>
+                                <Text style={[styles.buttonText, {color: colors.text}]}>
                                     {modoEdicion ? "Guardar cambios" : "Guardar movimiento"}
                                 </Text>
                             </TouchableOpacity>
@@ -257,12 +263,10 @@ const styles = StyleSheet.create({
 
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.4)",
         justifyContent: "flex-end",
     },
 
     modal: {
-        backgroundColor: "#fff",
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
         padding: 20,
@@ -291,17 +295,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 12,
         borderRadius: 12,
-        backgroundColor: "#F3F4F6",
         alignItems: "center",
-    },
-
-    tipoActivo: {
-        backgroundColor: "#AACDDC",
     },
 
     input: {
         borderWidth: 1,
-        borderColor: "#E5E7EB",
         borderRadius: 12,
         padding: 12,
         marginBottom: 12,
@@ -318,15 +316,10 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 20,
-        backgroundColor: "#F3F4F6",
-    },
-
-    categoriaActiva: {
-        backgroundColor: "#AACDDC",
+        borderWidth: 1,
     },
 
     button: {
-        backgroundColor: "#81A6C6",
         padding: 15,
         borderRadius: 12,
         alignItems: "center",
@@ -334,7 +327,6 @@ const styles = StyleSheet.create({
     },
 
     buttonText: {
-        color: "#fff",
         fontWeight: "700",
     },
 });

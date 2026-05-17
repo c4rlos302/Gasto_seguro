@@ -10,6 +10,9 @@ import {
 } from 'react-native';
 
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/src/context/ThemeContext';
+import { darkColors, lightColors } from '@/constants/theme';
+import { Colors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -35,9 +38,10 @@ export default function CategoriaModal({
     categoria,
     modoEdicion,
 }: Props) {
+    const { isDark } = useTheme();
+    const colors = isDark ? darkColors : lightColors;
     const [nombre, setNombre] = useState('');
-    const [tipo, setTipo] = useState<'gasto' | 'ingreso'>(
-        'gasto');
+    const [tipo, setTipo] = useState<'gasto' | 'ingreso'>('gasto');
 
     const guardar = () => {
         if (!nombre.trim()) {
@@ -71,10 +75,10 @@ export default function CategoriaModal({
     return (
         <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
             <TouchableWithoutFeedback onPress={onClose}>
-                <View style={styles.fondo}>
+                <View style={[styles.fondo, { backgroundColor: colors.overlay }]}>
                     <TouchableWithoutFeedback>
-                        <View style={styles.contenedor}>
-                            <Text style={styles.tituloModal}>
+                        <View style={[styles.contenedor, { backgroundColor: colors.secundario }]}>
+                            <Text style={[styles.tituloModal, { color: colors.text }]}>
                                 {modoEdicion
                                     ? "Editar Categoría"
                                     : "Nueva Categoría"}
@@ -82,39 +86,50 @@ export default function CategoriaModal({
 
                             <TextInput
                                 placeholder="Nombre"
+                                placeholderTextColor={colors.text}
                                 value={nombre}
                                 onChangeText={setNombre}
-                                style={styles.input}
+                                style={
+                                    [styles.input,
+                                    { color: colors.text, borderColor: colors.principal, backgroundColor: colors.fondo }]
+                                }
                             />
 
                             <View style={styles.botones}>
                                 <TouchableOpacity
                                     disabled={!activo}
-                                    style={[styles.botonTipo, tipo === 'gasto' && styles.botonTipoActivo]}
+                                    style={
+                                        [styles.botonTipo,
+                                        { backgroundColor: colors.fondo, borderColor: colors.fondo },
+                                        tipo === 'gasto' && { backgroundColor: colors.principal }]
+                                    }
                                     onPress={() => setTipo('gasto')}
                                 >
-                                    <Text>Gasto</Text>
+                                    <Text style={{ color: colors.text }}>Gasto</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     disabled={!activo}
-                                    style={[styles.botonTipo, tipo === 'ingreso' && styles.botonTipoActivo]}
+                                    style={
+                                        [styles.botonTipo,
+                                        { backgroundColor: colors.fondo, borderColor: colors.fondo },
+                                        tipo === 'ingreso' && { backgroundColor: colors.principal }]
+                                    }
                                     onPress={() => setTipo('ingreso')}
                                 >
-                                    <Text>Ingreso</Text>
+                                    <Text style={{ color: colors.text }}>Ingreso</Text>
                                 </TouchableOpacity>
                             </View>
 
                             <TouchableOpacity
-                                style={styles.botonGuardar}
+                                style={
+                                    [styles.botonGuardar,
+                                    { backgroundColor: colors.principal, borderColor: colors.fondo }]
+                                }
                                 onPress={guardar}
                                 disabled={loading}
                             >
-
-                                <Text style={{ color: "#fff" }}>
-                                    Guardar
-                                </Text>
-
+                                <Text style={{ color: colors.text }}>Guardar</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>
@@ -127,13 +142,11 @@ export default function CategoriaModal({
 const styles = StyleSheet.create({
     fondo: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'center',
         padding: 20,
     },
 
     contenedor: {
-        backgroundColor: '#fff',
         padding: 20,
         borderRadius: 20,
         gap: 15,
@@ -146,7 +159,6 @@ const styles = StyleSheet.create({
 
     input: {
         borderWidth: 1,
-        borderColor: '#ddd',
         borderRadius: 10,
         padding: 12,
     },
@@ -159,19 +171,15 @@ const styles = StyleSheet.create({
     botonTipo: {
         flex: 1,
         padding: 12,
-        backgroundColor: '#eee',
         borderRadius: 10,
+        borderWidth: 1,
         alignItems: 'center',
     },
 
-    botonTipoActivo: {
-        backgroundColor: "#AACDDC",
-    },
-
     botonGuardar: {
-        backgroundColor: '#81A6C6',
         padding: 14,
         borderRadius: 12,
+        borderWidth: 1,
         alignItems: 'center',
     },
 });

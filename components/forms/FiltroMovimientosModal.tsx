@@ -5,6 +5,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
+import { Colors } from "@/constants/colors";
 
 interface Props {
     visible: boolean;
@@ -52,16 +55,11 @@ export default function FiltroMovimientosModal({
     limpiarFiltros,
 
 }: Props) {
+    const { isDark } = useTheme();
+    const colors = isDark ? darkColors : lightColors;
 
-    const [
-        mostrarCalendarioInicio,
-        setMostrarCalendarioInicio
-    ] = useState(false);
-
-    const [
-        mostrarCalendarioFin,
-        setMostrarCalendarioFin
-    ] = useState(false);
+    const [mostrarCalendarioInicio, setMostrarCalendarioInicio] = useState(false);
+    const [mostrarCalendarioFin, setMostrarCalendarioFin] = useState(false);
 
     return (
         <Modal
@@ -70,91 +68,93 @@ export default function FiltroMovimientosModal({
             animationType="slide"
         >
             <TouchableWithoutFeedback onPress={onClose} >
-                <View style={styles.overlay}>
+                <View style={[styles.overlay, {backgroundColor: colors.overlay}]}>
                     <TouchableWithoutFeedback>
-                        <View style={styles.modal}>
+                        <View style={[styles.modal, {backgroundColor: colors.fondo}]}>
 
                             <View style={styles.modalHeader}>
-                                <Text style={styles.modalTitle}>Filtros</Text>
+                                <Text style={[styles.modalTitle, {color: colors.text}]}>Filtros</Text>
                                 <TouchableOpacity onPress={onClose} >
                                     <Ionicons
                                         name="close"
                                         size={24}
-                                        color="#000"
+                                        color={colors.text}
                                     />
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.label}>Tipo</Text>
+                            <Text style={[styles.label, {color: colors.text}]}>Tipo</Text>
                             <View style={styles.chips}>
                                 <TouchableOpacity
                                     style={[
-                                        styles.chip,
-                                        tipoFiltro === "gasto" &&
-                                        styles.chipActivo
+                                        styles.chip, {backgroundColor: colors.chip, borderColor: colors.principal},
+                                        tipoFiltro === "gasto" && {backgroundColor: colors.principal}
                                     ]}
                                     onPress={() => setTipoFiltro(
                                         tipoFiltro === "gasto" ? "" : "gasto"
                                     )
                                     }
                                 >
-                                    <Text>Gasto</Text>
+                                    <Text style={{color: colors.text}}>Gasto</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={[
-                                        styles.chip,
-                                        tipoFiltro === "ingreso" &&
-                                        styles.chipActivo
+                                        styles.chip, {backgroundColor: colors.chip, borderColor: colors.principal},
+                                        tipoFiltro === "ingreso" && {backgroundColor: colors.principal}
                                     ]}
                                     onPress={() => setTipoFiltro(
                                         tipoFiltro === "ingreso" ? "" : "ingreso"
                                     )
                                     }
                                 >
-                                    <Text>Ingreso</Text>
+                                    <Text style={{color: colors.text}}>Ingreso</Text>
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.label}>Categoría</Text>
+                            <Text style={[styles.label, {color: colors.text}]}>Categoría</Text>
                             <View style={styles.chips}>
                                 {categorias.map((cat: any) => (
                                     <TouchableOpacity
                                         key={cat.id}
                                         style={[
-                                            styles.chip,
+                                            styles.chip, {backgroundColor: colors.chip, borderColor: colors.principal},
                                             categoriasFiltro.includes(cat.id) &&
-                                            styles.chipActivo
+                                            {backgroundColor: colors.principal}
                                         ]}
                                         onPress={() => seleccionarCategoria(cat.id)}
                                     >
-                                        <Text>{cat.nombre}</Text>
+                                        <Text style={{color: colors.text}}>{cat.nombre}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
 
-                            <Text style={styles.label}>Monto</Text>
+                            <Text style={[styles.label, {color: colors.text}]}>Monto</Text>
                             <View style={styles.inputs}>
                                 <TextInput
                                     placeholder="Mínimo"
+                                    placeholderTextColor={colors.text}
                                     keyboardType="numeric"
                                     value={montoMin}
                                     onChangeText={setMontoMin}
-                                    style={styles.input}
+                                    style={[styles.input, {borderColor: colors.principal, color: colors.text}]}
                                 />
                                 <TextInput
                                     placeholder="Máximo"
+                                    placeholderTextColor={colors.text}
                                     keyboardType="numeric"
                                     value={montoMax}
                                     onChangeText={setMontoMax}
-                                    style={styles.input}
+                                    style={[styles.input, {borderColor: colors.principal, color: colors.text}]}
                                 />
                             </View>
 
-                            <Text style={styles.label}>Fecha</Text>
+                            <Text style={[styles.label, {color: colors.text}]}>Fecha</Text>
                             <View style={styles.inputs}>
-                                <Pressable style={styles.input} onPress={() => setMostrarCalendarioInicio(true)} >
-                                    <Text>{fechaInicio ? fechaInicio.toLocaleDateString() : "Inicio"}</Text>
+                                <Pressable style={[styles.input, {borderColor: colors.principal}]} onPress={() => setMostrarCalendarioInicio(true)} >
+                                    <Text style={{color: colors.text}}>
+                                        {fechaInicio ? fechaInicio.toLocaleDateString() : "Inicio"}
+                                    </Text>
                                 </Pressable>
                                 {mostrarCalendarioInicio && (
                                     <DateTimePicker
@@ -168,8 +168,10 @@ export default function FiltroMovimientosModal({
                                     />
                                 )}
 
-                                <Pressable style={styles.input} onPress={() => setMostrarCalendarioFin(true)} >
-                                    <Text>{fechaFin ? fechaFin.toLocaleDateString() : "Fin"}</Text>
+                                <Pressable style={[styles.input, {borderColor: colors.principal}]} onPress={() => setMostrarCalendarioFin(true)} >
+                                    <Text style={{color: colors.text}}>
+                                        {fechaFin ? fechaFin.toLocaleDateString() : "Fin"}
+                                    </Text>
                                 </Pressable>
                                 {mostrarCalendarioFin && (
                                     <DateTimePicker
@@ -186,17 +188,17 @@ export default function FiltroMovimientosModal({
 
                             <View style={styles.actions}>
                                 <TouchableOpacity
-                                    style={styles.clearBtn}
+                                    style={[styles.clearBtn, {backgroundColor: colors.chip}]}
                                     onPress={limpiarFiltros}
                                 >
-                                    <Text>Limpiar</Text>
+                                    <Text style={{color: colors.text}}>Limpiar</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    style={styles.applyBtn}
+                                    style={[styles.applyBtn, {backgroundColor: colors.principal}]}
                                     onPress={onClose}
                                 >
-                                    <Text style={{ color: "#fff" }}>Aplicar</Text>
+                                    <Text style={{ color: Colors.blanco}}>Aplicar</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -210,11 +212,9 @@ export default function FiltroMovimientosModal({
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.4)",
         justifyContent: "flex-end",
     },
     modal: {
-        backgroundColor: "#fff",
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
         padding: 20,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
+        marginBottom: 5,
     },
     modalTitle: {
         fontSize: 20,
@@ -245,11 +245,9 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 20,
-        backgroundColor: "#F3F4F6",
+        borderWidth: 1,
     },
-    chipActivo: {
-        backgroundColor: "#AACDDC",
-    },
+    
     inputs: {
         flexDirection: "row",
         gap: 10,
@@ -257,7 +255,6 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
         borderRadius: 12,
         padding: 10,
     },
@@ -270,14 +267,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 14,
         borderRadius: 12,
-        backgroundColor: "#F3F4F6",
         alignItems: "center",
     },
     applyBtn: {
         flex: 1,
         padding: 14,
         borderRadius: 12,
-        backgroundColor: "#81A6C6",
         alignItems: "center",
     },
 })

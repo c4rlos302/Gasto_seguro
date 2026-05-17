@@ -5,16 +5,14 @@ import { Ionicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import React, { useMemo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
+import { Colors } from '@/constants/colors'
 
 interface Props {
     movimientos: Movimiento[];
-
     touch?: boolean;
-
-    onSelect?: (
-        movimiento: Movimiento
-    ) => void;
-
+    onSelect?: (movimiento: Movimiento) => void;
     movimientoSeleccionado?: Movimiento | null;
 }
 
@@ -24,51 +22,45 @@ export default function FlashListMovimientos({
     onSelect,
     movimientoSeleccionado,
 }: Props) {
+    const { isDark } = useTheme();
+    const colors = isDark ? darkColors : lightColors;
     const { categorias } = useCategorias();
     const categoriasMap = useMemo(() => {
         return categorias.reduce(
             (acc: any, cat: any) => {
-
                 acc[cat.id] = cat.nombre;
-
                 return acc;
-
-            },
-            {}
-        );
+            }, {});
     }, [categorias]);
 
-    const renderContenido = (
-        m: Movimiento
-    ) => (
-
-        <View style={[styles.movimiento,
+    const renderContenido = (m: Movimiento) => (
+        <View style={[styles.movimiento, {borderBottomColor: colors.principal},
         movimientoSeleccionado?.id === m.id &&
-        styles.movimientoActivo
+        {borderRadius: 12, backgroundColor: colors.secundario}
         ]}>
-            <View style={styles.icono}>
+            <View style={[styles.icono, { backgroundColor: colors.principal }]}>
                 <Ionicons
                     name={m.tipo === "gasto" ? "card" : "trending-up"}
                     size={18}
-                    color="#fff"
+                    color={Colors.blanco}
                 />
             </View>
 
             <View style={styles.info}>
-                <Text style={styles.categoria}>
+                <Text style={[styles.categoria, {color: colors.text}]}>
                     {categoriasMap[m.categoria_id] || "Sin categoría"}
                 </Text>
 
-                <Text style={styles.descripcion}>
+                <Text style={[styles.descripcion, {color: colors.textSecondary}]}>
                     {m.descripcion || "Sin descripción"}
                 </Text>
 
-                <Text style={styles.fecha}>
+                <Text style={[styles.fecha, {color: colors.textSecondary}]}>
                     {formatFecha(m.fecha)}
                 </Text>
             </View>
 
-            <Text style={styles.monto}>
+            <Text style={[styles.monto, {color: Colors.principalLight}]}>
                 {m.tipo === "gasto" ? "-" : "+"} $ {parseFloat(m.monto).toFixed(2)}
             </Text>
         </View>
@@ -85,7 +77,7 @@ export default function FlashListMovimientos({
                         <Pressable onPress={() => onSelect?.(m)}>
                             {renderContenido(m)}
                         </Pressable>
-                    ) : ( renderContenido(m) )
+                    ) : (renderContenido(m))
                 )}
 
                 ItemSeparatorComponent={() => (
@@ -97,9 +89,9 @@ export default function FlashListMovimientos({
                         <Ionicons
                             name="wallet-outline"
                             size={60}
-                            color="#D1D5DB"
+                            color={colors.principal}
                         />
-                        <Text style={styles.emptyText}>No hay movimientos</Text>
+                        <Text style={[styles.emptyText, {color: colors.text}]}>No hay movimientos</Text>
                     </View>
                 )}
             />
@@ -113,7 +105,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: "#F3F4F6",
+        padding: 10,
     },
     icono: {
         width: 42,
@@ -122,7 +114,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginRight: 12,
-        backgroundColor: "#AACDDC",
     },
     info: {
         flex: 1,
@@ -130,22 +121,18 @@ const styles = StyleSheet.create({
     categoria: {
         fontSize: 15,
         fontWeight: "700",
-        color: "#111827",
     },
     descripcion: {
         fontSize: 13,
-        color: "#6B7280",
         marginTop: 2,
     },
     fecha: {
         fontSize: 12,
-        color: "#9CA3AF",
         marginTop: 4,
     },
     monto: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#AACDDC",
     },
     empty: {
         justifyContent: "center",
@@ -154,11 +141,6 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         marginTop: 10,
-        color: "#9CA3AF",
         fontSize: 15,
-    },
-    movimientoActivo: {
-        backgroundColor: "#e9f3ff",
-        borderRadius: 12,
     },
 })

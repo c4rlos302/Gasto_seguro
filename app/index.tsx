@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useAuth } from '../src/hooks/useAuth';
-import { Loader } from '@/components/loader';
 import { useEffect, useState } from 'react';
+import PantallaDeCarga from './pantallaDeCarga';
 
 export default function Index() {
   const { user, loading } = useAuth();
@@ -11,14 +11,14 @@ export default function Index() {
 
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2500);
+    }, 2000);
 
     return () => clearTimeout(timer);
 
   }, []);
 
   if (loading || showSplash) {
-  return <Loader visible={true}/>
+  return <PantallaDeCarga visible={true}/>
   }
 
   if (user) {

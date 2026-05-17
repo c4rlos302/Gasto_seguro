@@ -7,15 +7,18 @@ import Header from "@/components/ui/Header";
 import { CardContainer, CardView } from "@/components/ui/Card";
 import FlashListMovimientos from "@/components/FlashListMovimientos";
 import { Loader } from "@/components/loader";
+import GastosCategoriaChart from "@/components/charts/GastosCategoriaChart";
+import MovimientoModal from "@/components/forms/MovimientoModal";
 
 import { useUser } from "@/src/hooks/useUser";
 import { useMovimientos } from "@/src/hooks/useMovimientos";
-import MovimientoModal from "@/components/forms/MovimientoModal";
-import IngresosGastosChart from "@/components/charts/IngresosGastosChart";
-import GastosCategoriaChart from "@/components/charts/GastosCategoriaChart";
-
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
+import { Colors } from "@/constants/colors";
 
 export default function Inicio() {
+  const { isDark } = useTheme();
+  const colors = isDark ? darkColors : lightColors;
   const { usuario } = useUser();
   const { movimientos, fetchMovimientos } = useMovimientos();
 
@@ -80,84 +83,84 @@ export default function Inicio() {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <CardView style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Balance total</Text>
-          <Text style={styles.balance}>
+          <Text style={[styles.balanceLabel, {color: colors.textSecondary}]}>Balance total</Text>
+          <Text style={[styles.balance, {color: colors.text}]}>
             ${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
           </Text>
         </CardView>
 
         <View style={styles.resumenContainer}>
-          <CardView style={styles.resumenCard}>
-            <Ionicons name="card" size={28} color="#EF4444" />
-            <Text style={styles.resumenLabel}>Gastos</Text>
-            <Text style={styles.gasto}>
+          <CardView style={[styles.balanceCard, styles.resumenCard]}>
+            <Ionicons name="card" size={28} color={Colors.error} />
+            <Text style={[styles.resumenLabel, {color: colors.textSecondary}]}>Gastos</Text>
+            <Text style={[styles.movimiento, {color: Colors.error}]}>
               ${gastosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
 
-          <CardView style={styles.resumenCard}>
-            <Ionicons name="trending-up" size={28} color="#10B981" />
-            <Text style={styles.resumenLabel}>Ingresos</Text>
-            <Text style={styles.ingreso}>
+          <CardView style={[styles.balanceCard, styles.resumenCard]}>
+            <Ionicons name="trending-up" size={28} color={Colors.success} />
+            <Text style={[styles.resumenLabel, {color: colors.textSecondary}]}>Ingresos</Text>
+            <Text style={[styles.movimiento, {color: Colors.success}]}>
               ${ingresosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
         </View>
 
         <CardView>
-          <Text style={styles.sectionTitle}>Acciones rápidas</Text>
+          <Text style={[styles.sectionTitle, {color: colors.text}]}>Acciones rápidas</Text>
           <View style={styles.grid}>
             <TouchableOpacity
-              style={styles.accionRapida}
+              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
               onPress={() => {
                 setTipoMovimiento("gasto");
                 setModalMovimiento(true);
               }}
             >
-              <Ionicons name="card" size={32} color="#81A6C6" />
-              <Text style={styles.textoAccionRapida}>Gasto</Text>
+              <Ionicons name="card" size={32} color={Colors.principalLight} />
+              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Gasto</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.accionRapida}
+              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
               onPress={() => {
                 setTipoMovimiento("ingreso");
                 setModalMovimiento(true);
               }}
             >
-              <Ionicons name="trending-up" size={32} color="#81A6C6" />
-              <Text style={styles.textoAccionRapida}>Ingreso</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.accionRapida}
-              onPress={() => {
-                router.navigate("/(tabs)/presupuestos");
-              }}
-            >
-              <Ionicons name="pie-chart" size={32} color="#81A6C6" />
-              <Text style={styles.textoAccionRapida}>Presupuesto</Text>
+              <Ionicons name="trending-up" size={32} color={Colors.principalLight} />
+              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Ingreso</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.accionRapida}
+              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
+              onPress={() => {
+                router.navigate("../presupuestos");
+              }}
+            >
+              <Ionicons name="pie-chart" size={32} color={Colors.principalLight} />
+              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Presupuesto</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
               onPress={() =>
                 router.push("/categorias")
               }
             >
-              <Ionicons name="pricetags" size={32} color="#81A6C6" />
-              <Text style={styles.textoAccionRapida}>Categorías</Text>
+              <Ionicons name="pricetags" size={32} color={Colors.principalLight} />
+              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Categorías</Text>
             </TouchableOpacity>
           </View>
         </CardView>
 
         <CardView>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Reportes y gráficos</Text>
+            <Text style={[styles.sectionTitle, {color: colors.text}]}>Reportes y gráficos</Text>
             <TouchableOpacity onPress={() => {
               router.navigate("/(tabs)/reportes");
             }}>
-              <Text style={styles.link}>Ver más</Text>
+              <Text style={[styles.link, {color: colors.link}]}>Ver más</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.chartPlaceholder}>
@@ -167,9 +170,9 @@ export default function Inicio() {
 
         <CardView>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Últimos movimientos</Text>
+            <Text style={[styles.sectionTitle, {color: colors.text}]}>Últimos movimientos</Text>
             <TouchableOpacity onPress={() => router.push("/historial")} >
-              <Text style={styles.link}>Ver historial</Text>
+              <Text style={[styles.link, {color: colors.link}]}>Ver historial</Text>
             </TouchableOpacity>
           </View>
           <View style={{ height: 380 }}>
@@ -181,7 +184,7 @@ export default function Inicio() {
       <MovimientoModal
         visible={modalMovimiento}
         onClose={() => {
-          setModalMovimiento(false);          
+          setModalMovimiento(false);
         }}
         tipoInicial={tipoMovimiento}
       />
@@ -199,14 +202,12 @@ const styles = StyleSheet.create({
 
   balanceLabel: {
     fontSize: 16,
-    color: "#6B7280",
     marginBottom: 10,
   },
 
   balance: {
     fontSize: 36,
     fontWeight: "700",
-    color: "#111827",
   },
 
   resumenContainer: {
@@ -218,35 +219,23 @@ const styles = StyleSheet.create({
 
   resumenCard: {
     width: "45%",
-    alignItems: "center",
-    paddingVertical: 20,
   },
 
   resumenLabel: {
     marginTop: 10,
     fontSize: 14,
-    color: "#6B7280",
   },
 
-  ingreso: {
+  movimiento: {
     marginTop: 6,
     fontSize: 18,
     fontWeight: "700",
-    color: "#10B981",
-  },
-
-  gasto: {
-    marginTop: 6,
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#EF4444",
   },
 
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 15,
-    color: "#111827",
   },
 
   grid: {
@@ -258,7 +247,6 @@ const styles = StyleSheet.create({
 
   accionRapida: {
     width: "48%",
-    backgroundColor: "#fff",
     borderRadius: 20,
     paddingVertical: 24,
     alignItems: "center",
@@ -268,7 +256,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 15,
     fontWeight: "600",
-    color: "#374151",
   },
 
   sectionHeader: {
@@ -279,7 +266,6 @@ const styles = StyleSheet.create({
   },
 
   link: {
-    color: "#81A6C6",
     fontWeight: "600",
   },
 
@@ -288,8 +274,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  chartText: {
-    marginTop: 10,
-    color: "#9CA3AF",
-  },
 });

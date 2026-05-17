@@ -10,17 +10,17 @@ import CategoriaModal from '@/components/forms/CategoriaModal';
 import Header from '@/components/ui/Header'
 import { CardContainer, CardView } from '@/components/ui/Card'
 import { Loader } from '@/components/loader';
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
+import { Colors } from "@/constants/colors";
+
 export default function Categorias() {
+    const { isDark } = useTheme();
+    const colors = isDark ? darkColors : lightColors;
 
     const { categorias, fetchCategorias, addCategoria, editCategoria, removeCategoria } = useCategorias();
-
-    const categoriasGasto = categorias?.filter(
-        (cat: any) => cat.tipo === "gasto"
-    );
-
-    const categoriasIngreso = categorias?.filter(
-        (cat: any) => cat.tipo === "ingreso"
-    );
+    const categoriasGasto = categorias?.filter((cat: any) => cat.tipo === "gasto");
+    const categoriasIngreso = categorias?.filter((cat: any) => cat.tipo === "ingreso");
 
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -36,15 +36,11 @@ export default function Categorias() {
                 ]);
                 setLoading(false);
             };
-
             cargarDatos();
         }, [])
     );
 
-    const guardarCategoria = async (
-        nombre: string,
-        tipo: "gasto" | "ingreso"
-    ) => {
+    const guardarCategoria = async (nombre: string, tipo: "gasto" | "ingreso") => {
 
         setLoading(true);
 
@@ -86,14 +82,13 @@ export default function Categorias() {
                 }
             ]
         )
-
     }
 
     return (
         <CardContainer>
             <Header title="Categorias" regresar />
             <CardView>
-                <Text style={styles.label}>Tipo Gasto:</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Tipo Gasto:</Text>
                 <ScrollView style={{ maxHeight: 125 }}>
                     <View style={styles.categorias}>
                         {categoriasGasto?.map((cat: any) => (
@@ -102,12 +97,14 @@ export default function Categorias() {
                                 disabled={cat.usuario_id === null}
                                 style={[
                                     styles.categoria,
-                                    categoriaSeleccionada?.id === cat.id && styles.categoriaActiva,
-                                    cat.usuario_id === null && styles.categoriaGlobal,
+                                    { backgroundColor: colors.fondo, borderColor: colors.principal },
+                                    categoriaSeleccionada?.id === cat.id &&
+                                    { backgroundColor: colors.principal, borderColor: colors.fondo },
+                                    cat.usuario_id === null && { backgroundColor: colors.fondo }
                                 ]}
                                 onPress={() => setCategoriaSeleccionada(cat)}
                             >
-                                {<Text>
+                                {<Text style={{ color: colors.text }}>
                                     {cat.usuario_id === null && " 🔒"}
                                     {cat.nombre}
                                 </Text>}
@@ -115,7 +112,7 @@ export default function Categorias() {
                         ))}
                     </View>
                 </ScrollView>
-                <Text style={styles.label} >Tipo Ingreso:</Text>
+                <Text style={[styles.label, {color: colors.text}]} >Tipo Ingreso:</Text>
                 <ScrollView style={{ maxHeight: 125 }}>
                     <View style={styles.categorias}>
                         {categoriasIngreso?.map((cat: any) => (
@@ -124,12 +121,14 @@ export default function Categorias() {
                                 disabled={cat.usuario_id === null}
                                 style={[
                                     styles.categoria,
-                                    categoriaSeleccionada?.id === cat.id && styles.categoriaActiva,
-                                    cat.usuario_id === null && styles.categoriaGlobal,
+                                    { backgroundColor: colors.fondo, borderColor: colors.principal },
+                                    categoriaSeleccionada?.id === cat.id &&
+                                    { backgroundColor: colors.principal, borderColor: colors.fondo },
+                                    cat.usuario_id === null && { backgroundColor: colors.fondo }
                                 ]}
                                 onPress={() => setCategoriaSeleccionada(cat)}
                             >
-                                {<Text>
+                                {<Text style={{ color: colors.text }}>
                                     {cat.usuario_id === null && " 🔒"}
                                     {cat.nombre}
                                 </Text>}
@@ -147,9 +146,9 @@ export default function Categorias() {
                         setModalVisible(true);
                     }}
                 >
-                    <Ionicons name="add" size={20} color="#81A6C6" />
-                    <Text style={styles.optionText} >Crear categoria</Text>
-                    <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
+                    <Ionicons name="add" size={20} color={Colors.principalLight} />
+                    <Text style={[styles.optionText, {color: colors.text}]} >Crear categoria</Text>
+                    <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
                 </TouchableOpacity>
             </CardView>
             <CardView>
@@ -161,9 +160,9 @@ export default function Categorias() {
                         setModalVisible(true);
                     }}
                 >
-                    <Ionicons name="create" size={20} color="#81A6C6" />
-                    <Text style={styles.optionText} >Modificar catogoria</Text>
-                    <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
+                    <Ionicons name="create" size={20} color={Colors.principalLight} />
+                    <Text style={[styles.optionText, {color: colors.text}]} >Modificar catogoria</Text>
+                    <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
                 </TouchableOpacity>
             </CardView>
             <CardView>
@@ -172,9 +171,9 @@ export default function Categorias() {
                     disabled={!categoriaSeleccionada}
                     onPress={eliminarCategoria}
                 >
-                    <Ionicons name="remove" size={20} color="#81A6C6" />
-                    <Text style={styles.optionText} >Eliminar categoria</Text>
-                    <Ionicons name="chevron-forward" size={20} color="#81A6C6" />
+                    <Ionicons name="remove" size={20} color={Colors.principalLight} />
+                    <Text style={[styles.optionText, {color: colors.text}]} >Eliminar categoria</Text>
+                    <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
                 </TouchableOpacity>
             </CardView>
             <CategoriaModal
@@ -218,23 +217,15 @@ const styles = StyleSheet.create({
 
     categoria: {
         padding: 10,
-        backgroundColor: "#fff",
         borderRadius: 8,
+        borderWidth: 1,
         display: "flex",
         flexDirection: "row",
     },
 
-    categoriaActiva: {
-        backgroundColor: "#AACDDC",
-    },
-
-    categoriaGlobal: {
-        backgroundColor: "#BBDDDC",
-    },
-
     label: {
-        marginTop: 10,
-        marginBottom: 5,
+        marginVertical: 15,
+        fontSize: 20,
         fontWeight: "600",
     },
 

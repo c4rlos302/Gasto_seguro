@@ -4,18 +4,40 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
 
 function RootStack() {
   const { isDark } = useTheme();
+  const MyLightTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: lightColors.fondo,
+      card: lightColors.secundario,
+      text: lightColors.text,
+      primary: lightColors.principal,
+      border: "transparent",
+      notification: lightColors.principal,
+    },
+  };
+
+  const MyDarkTheme = {
+    ...DarkTheme,
+    colors: {
+      ...DarkTheme.colors,
+      background: darkColors.fondo,
+      card: darkColors.secundario,
+      text: darkColors.text,
+      primary: darkColors.principal,
+      border: "transparent",
+      notification: darkColors.principal,
+    },
+  };
 
   return (
-    <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+    <NavigationThemeProvider value={isDark ? MyDarkTheme : MyLightTheme}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      <Stack screenOptions={{headerShown: false}} />
     </NavigationThemeProvider>
   );
 }

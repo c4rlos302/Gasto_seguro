@@ -14,8 +14,13 @@ import FlashListMovimientos from '@/components/FlashListMovimientos';
 import { Movimiento } from '@/src/types/movimiento';
 import FiltroMovimientosModal from '@/components/forms/FiltroMovimientosModal';
 import MovimientoModal from '@/components/forms/MovimientoModal';
+import { Colors } from '@/constants/colors';
+import { useTheme } from "@/src/context/ThemeContext";
+import { darkColors, lightColors } from "@/constants/theme";
 
 export default function Historial() {
+  const { isDark } = useTheme();
+  const colors = isDark ? darkColors : lightColors;
   const { movimientos, fetchMovimientos, removeMovimiento } = useMovimientos();
   const { categorias, fetchCategorias } = useCategorias();
 
@@ -74,8 +79,8 @@ export default function Historial() {
     const fechaInicioStr = inicio ? inicio.toISOString().split("T")[0] : null;
     const fechaFinStr = fin ? fin.toISOString().split("T")[0] : null;
     const cumpleTipo = !tipoFiltro || m.tipo === tipoFiltro;
-    const cumpleCategoria = categoriasFiltro.length === 0 || 
-                            categoriasFiltro.includes(m.categoria_id);
+    const cumpleCategoria = categoriasFiltro.length === 0 ||
+      categoriasFiltro.includes(m.categoria_id);
 
     const cumpleMin = !montoMin || monto >= parseFloat(montoMin);
     const cumpleMax = !montoMax || monto <= parseFloat(montoMax);
@@ -127,13 +132,12 @@ export default function Historial() {
         title="Historial de movimientos"
         right={
           <TouchableOpacity
-            style={styles.botonFiltro}
             onPress={() => setModalFiltros(true)}
           >
             <Ionicons
               name="filter"
               size={20}
-              color="#fff"
+              color={Colors.blanco}
             />
           </TouchableOpacity>
         }
@@ -150,7 +154,7 @@ export default function Historial() {
       />
 
       <TouchableOpacity
-        style={styles.fab}
+        style={[styles.fab, {backgroundColor: colors.principal}]}
         onPress={() => {
           setMovimientoSeleccionado(null);
           setModoEdicion(false);
@@ -160,7 +164,7 @@ export default function Historial() {
         <Ionicons
           name="add"
           size={30}
-          color="#fff"
+          color={Colors.blanco}
         />
       </TouchableOpacity>
 
@@ -194,10 +198,10 @@ export default function Historial() {
             setMovimientoSeleccionado(null);
           }}
         >
-          <View style={styles.overlay}>
+          <View style={[styles.overlay, {backgroundColor: colors.overlay}]}>
             <TouchableWithoutFeedback>
-              <View style={styles.actionsModal}>
-                <Text style={styles.actionsTitle}>Acciones</Text>
+              <View style={[styles.actionsModal, {backgroundColor: colors.fondo}]}>
+                <Text style={[styles.actionsTitle, {color: colors.text}]}>Acciones</Text>
                 <TouchableOpacity
                   style={styles.actionBtn}
                   onPress={() => {
@@ -206,25 +210,25 @@ export default function Historial() {
                     setModalMovimiento(true);
                   }}
                 >
-                  <Ionicons name="create-outline" size={20} color="#81A6C6" />
-                  <Text style={styles.actionText}>Editar movimiento</Text>
+                  <Ionicons name="create-outline" size={20} color={Colors.principalLight} />
+                  <Text style={[styles.actionText, {color: colors.text}]}>Editar movimiento</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.actionBtn}
                   onPress={eliminarMovimiento}
                 >
-                  <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                  <Text style={[styles.actionText, { color: '#EF4444' }]}>
+                  <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                  <Text style={[styles.actionText, { color: Colors.error }]}>
                     Eliminar movimiento
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.cancelBtn}
+                  style={[styles.cancelBtn, {backgroundColor: colors.principal}]}
                   onPress={() => setModalAcciones(false)}
                 >
-                  <Text style={styles.cancelText}>Cancelar</Text>
+                  <Text style={[styles.cancelText, {color: colors.text}]}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
@@ -273,12 +277,9 @@ export default function Historial() {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
-  botonFiltro: {
-    padding: 6,
-  },
+
   fab: {
     position: "absolute",
     bottom: 30,
@@ -286,14 +287,12 @@ const styles = StyleSheet.create({
     width: 65,
     height: 65,
     borderRadius: 35,
-    backgroundColor: "#81A6C6",
     justifyContent: "center",
     alignItems: "center",
     elevation: 6,
   },
 
   actionsModal: {
-    backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     padding: 20,
@@ -321,7 +320,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: "#F3F4F6",
     alignItems: "center",
   },
 

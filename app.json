@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Gasto_seguro",
+    "name": "Gasto Seguro",
     "slug": "Gasto_seguro",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.c4rlos302.Gasto_seguro"
     },
     "web": {
       "output": "static",
@@ -44,6 +45,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7e3e3980-28d5-4b3f-8976-9da0585f04a2"
+      }
     }
   }
 }

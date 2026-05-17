@@ -1,10 +1,14 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { darkColors, lightColors } from "@/constants/theme";
+import { useTheme } from "@/src/context/ThemeContext";
+import { Colors } from "@/constants/colors";
 
 export default function TabLayout() {
-
-  const activeColor = "#AACDDC";
-  const inactiveColor = "#e9f3ff";
+  const { isDark } = useTheme();
+  const colors = isDark ? darkColors : lightColors;
+  const activeColor = Colors.principalLight;
+  const inactiveColor = colors.text;
 
   return (
     <Tabs
@@ -13,7 +17,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: activeColor,
         tabBarInactiveTintColor: inactiveColor,
         tabBarStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: colors.secundario,
           borderTopWidth: 0,
           elevation: 10,
           height: 90,
@@ -45,20 +49,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "stats-chart" : "stats-chart-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="presupuestos"
-        options={{
-          title: "Presupuestos",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "calculator" : "calculator-outline"}
               size={24}
               color={color}
             />
