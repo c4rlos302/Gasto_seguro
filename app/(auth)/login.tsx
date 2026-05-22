@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { login, resetPassword, updatePassword, checkEmailExists } from '../../src/services/auth.service';
+import { login, resetPassword, checkEmailExists } from '../../src/services/auth.service';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Loader } from '../../components/loader';
 import { StyleSheet } from 'react-native';

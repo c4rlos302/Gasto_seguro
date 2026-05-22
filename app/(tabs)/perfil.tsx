@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from "../../src/services/supabase";
 import { useUser } from '../../src/hooks/useUser';
@@ -13,6 +13,8 @@ import { logout } from '../../src/services/auth.service';
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
+import AvatarModal from "@/components/forms/AvatarModal";
+import { getAvatars } from "@/src/services/avatar.service";
 
 
 export default function PerfilScreen() {
@@ -22,60 +24,17 @@ export default function PerfilScreen() {
   const { usuario } = useUser();
   const [loading, setLoading] = useState(false);
 
-  const [avatar, setAvatar] = useState(usuario?.avatar_url || null);
+  const [modalAvatars, setModalAvatars] = useState(false);
+  const [avatars, setAvatars] = useState<any[]>([]);
 
-  async function pickImage() {
+  const [avatar, setAvatar] = useState<string | null>(null);
 
-    if (!usuario?.id) return;
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (result.canceled) return;
-
-    try {
-
-      const image = result.assets[0];
-
-      const response = await fetch(image.uri);
-      const blob = await response.blob();
-
-      const fileName = `${usuario.id}-${Date.now()}.jpg`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(fileName, blob, {
-          contentType: "image/jpeg",
-        });
-
-      if (uploadError) {
-        console.log(uploadError);
-        return;
-      }
-
-      const { data } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
-
-      const publicUrl = data.publicUrl;
-
-      await supabase
-        .from("usuarios")
-        .update({
-          avatar_url: publicUrl
-        })
-        .eq("id", usuario.id);
-
-      setAvatar(publicUrl);
-
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (usuario?.avatar_url) {
+      setAvatar(usuario.avatar_url);
     }
-  }
+  }, [usuario]);
+
   const cerrarSesion = async () => {
     if (loading) return;
 
@@ -84,6 +43,19 @@ export default function PerfilScreen() {
     setLoading(false);
     router.replace('/(auth)/login');
   }
+
+  const seleccionarAvatar = async (url: string) => {
+    if (!usuario?.id) return;
+    await supabase
+      .from("usuarios")
+      .update({
+        avatar_url: url,
+      })
+      .eq("id", usuario.id);
+
+    setAvatar(url);
+    setModalAvatars(false);
+  };
 
   return (
     <CardContainer>
@@ -96,7 +68,16 @@ export default function PerfilScreen() {
             ) : (
               <Ionicons name="person-circle-outline" size={100} color={colors.chip} />
             )}
-            <TouchableOpacity style={[styles.cameraIcon, { backgroundColor: colors.principal }]} onPress={pickImage}>
+            <TouchableOpacity
+              style={[styles.cameraIcon, { backgroundColor: colors.principal }]}
+              onPress={async () => {
+                const { data } = await getAvatars();
+                if (data) {
+                  setAvatars(data);
+                }
+                setModalAvatars(true);
+              }}
+            >
               <Ionicons name="camera-outline" size={22} color={Colors.blanco} />
             </TouchableOpacity>
           </View>
@@ -144,6 +125,12 @@ export default function PerfilScreen() {
         </View>
 
         <Loader visible={loading} />
+        <AvatarModal
+          visible={modalAvatars}
+          onClose={() => setModalAvatars(false)}
+          avatars={avatars}
+          onSelect={seleccionarAvatar}
+        />
       </View>
     </CardContainer>
   );

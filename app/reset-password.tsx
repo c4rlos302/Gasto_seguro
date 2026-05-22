@@ -55,14 +55,16 @@ export default function CambiarContrasena() {
           placeholderTextColor={colors.text}
           value={password}
           onChangeText={setPassword}
-          style={[styles.input, { backgroundColor: colors.fondo }]}
+          secureTextEntry
+          style={[styles.input, { backgroundColor: colors.fondo, color: colors.text }]}
         />
         <TextInput
           placeholder="Confirmar contraseña"
           placeholderTextColor={colors.text}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          style={[styles.input, { backgroundColor: colors.fondo }]}
+          secureTextEntry
+          style={[styles.input, { backgroundColor: colors.fondo, color: colors.text }]}
         />
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.principal }, loading && styles.buttonDisabled]}

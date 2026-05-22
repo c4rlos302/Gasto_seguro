@@ -83,8 +83,8 @@ export default function Inicio() {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <CardView style={styles.balanceCard}>
-          <Text style={[styles.balanceLabel, {color: colors.textSecondary}]}>Balance total</Text>
-          <Text style={[styles.balance, {color: colors.text}]}>
+          <Text style={[styles.balanceLabel, { color: colors.textSecondary }]}>Balance total</Text>
+          <Text style={[styles.balance, { color: colors.text }]}>
             ${balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
           </Text>
         </CardView>
@@ -92,75 +92,75 @@ export default function Inicio() {
         <View style={styles.resumenContainer}>
           <CardView style={[styles.balanceCard, styles.resumenCard]}>
             <Ionicons name="card" size={28} color={Colors.error} />
-            <Text style={[styles.resumenLabel, {color: colors.textSecondary}]}>Gastos</Text>
-            <Text style={[styles.movimiento, {color: Colors.error}]}>
+            <Text style={[styles.resumenLabel, { color: colors.textSecondary }]}>Gastos</Text>
+            <Text style={[styles.movimiento, { color: Colors.error }]}>
               ${gastosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
 
           <CardView style={[styles.balanceCard, styles.resumenCard]}>
             <Ionicons name="trending-up" size={28} color={Colors.success} />
-            <Text style={[styles.resumenLabel, {color: colors.textSecondary}]}>Ingresos</Text>
-            <Text style={[styles.movimiento, {color: Colors.success}]}>
+            <Text style={[styles.resumenLabel, { color: colors.textSecondary }]}>Ingresos</Text>
+            <Text style={[styles.movimiento, { color: Colors.success }]}>
               ${ingresosMes.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
         </View>
 
         <CardView>
-          <Text style={[styles.sectionTitle, {color: colors.text}]}>Acciones rápidas</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Acciones rápidas</Text>
           <View style={styles.grid}>
             <TouchableOpacity
-              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
+              style={[styles.accionRapida, { backgroundColor: colors.fondo }]}
               onPress={() => {
                 setTipoMovimiento("gasto");
                 setModalMovimiento(true);
               }}
             >
               <Ionicons name="card" size={32} color={Colors.principalLight} />
-              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Gasto</Text>
+              <Text style={[styles.textoAccionRapida, { color: colors.textSecondary }]}>Gasto</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
+              style={[styles.accionRapida, { backgroundColor: colors.fondo }]}
               onPress={() => {
                 setTipoMovimiento("ingreso");
                 setModalMovimiento(true);
               }}
             >
               <Ionicons name="trending-up" size={32} color={Colors.principalLight} />
-              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Ingreso</Text>
+              <Text style={[styles.textoAccionRapida, { color: colors.textSecondary }]}>Ingreso</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
+              style={[styles.accionRapida, { backgroundColor: colors.fondo }]}
               onPress={() => {
                 router.navigate("../presupuestos");
               }}
             >
               <Ionicons name="pie-chart" size={32} color={Colors.principalLight} />
-              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Presupuesto</Text>
+              <Text style={[styles.textoAccionRapida, { color: colors.textSecondary }]}>Presupuesto</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.accionRapida, {backgroundColor: colors.fondo}]}
+              style={[styles.accionRapida, { backgroundColor: colors.fondo }]}
               onPress={() =>
                 router.push("/categorias")
               }
             >
               <Ionicons name="pricetags" size={32} color={Colors.principalLight} />
-              <Text style={[styles.textoAccionRapida, {color: colors.textSecondary}]}>Categorías</Text>
+              <Text style={[styles.textoAccionRapida, { color: colors.textSecondary }]}>Categorías</Text>
             </TouchableOpacity>
           </View>
         </CardView>
 
         <CardView>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, {color: colors.text}]}>Reportes y gráficos</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Reportes y gráficos</Text>
             <TouchableOpacity onPress={() => {
               router.navigate("/(tabs)/reportes");
             }}>
-              <Text style={[styles.link, {color: colors.link}]}>Ver más</Text>
+              <Text style={[styles.link, { color: colors.link }]}>Ver más</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.chartPlaceholder}>
@@ -168,14 +168,14 @@ export default function Inicio() {
           </View>
         </CardView>
 
-        <CardView>
+        <CardView style={{marginBottom: 30}} >
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, {color: colors.text}]}>Últimos movimientos</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Últimos movimientos</Text>
             <TouchableOpacity onPress={() => router.push("/historial")} >
-              <Text style={[styles.link, {color: colors.link}]}>Ver historial</Text>
+              <Text style={[styles.link, { color: colors.link }]}>Ver historial</Text>
             </TouchableOpacity>
           </View>
-          <View style={{ height: 380 }}>
+          <View style={{ height: 470 }}>
             <FlashListMovimientos movimientos={movimientosRecientes} />
           </View>
         </CardView>
@@ -185,6 +185,11 @@ export default function Inicio() {
         visible={modalMovimiento}
         onClose={() => {
           setModalMovimiento(false);
+        }}
+        onSuccess={async () => {
+          setLoading(true);
+          await fetchMovimientos();
+          setLoading(false);
         }}
         tipoInicial={tipoMovimiento}
       />
