@@ -1,39 +1,61 @@
-import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Loader } from "@/components/loader";
 import Header from "@/components/ui/Header";
 import { CardContainer, CardView } from "@/components/ui/Card";
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
 
-export default function Preferencias() {
-  const { isDark } = useTheme();
+
+export default function Apariencia() {
+  const { isDark, setTheme } = useTheme();
   const colors = isDark ? darkColors : lightColors;
+
   return (
     <CardContainer>
-      <Header
-        title="Preferencias"
-        regresar
-      />
+      <Header title="Preferencias" regresar />
+
+      <Text style={[styles.title, { color: colors.text }]}>Selecciona el tema</Text>
+
       <CardView>
-        <TouchableOpacity style={styles.option} onPress={() => router.push("/notificaciones")}>
-          <Text style={[styles.optionText, { color: colors.text }]}>Notificaciones</Text>
-          <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
+        <TouchableOpacity
+          style={[styles.option, { backgroundColor: colors.secundario }]}
+          onPress={() => setTheme("light")}
+        >
+          <Ionicons name="sunny-outline" size={22} color={Colors.principalLight} />
+          <Text style={[styles.optionText, { color: colors.text }]}>Claro</Text>
         </TouchableOpacity>
       </CardView>
 
       <CardView>
-        <TouchableOpacity style={styles.option} onPress={() => router.push("/apariencia")}>
-          <Text style={[styles.optionText, { color: colors.text }]}>Apariencia</Text>
-          <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
+        <TouchableOpacity
+          style={[styles.option, { backgroundColor: colors.secundario }]}
+          onPress={() => setTheme("dark")}>
+          <Ionicons name="moon-outline" size={22} color={Colors.principalLight} />
+          <Text style={[styles.optionText, { color: colors.text }]}>Oscuro</Text>
         </TouchableOpacity>
       </CardView>
+
+      <CardView>
+        <TouchableOpacity
+          style={[styles.option, { backgroundColor: colors.secundario }]}
+          onPress={() => setTheme("auto")}>
+          <Ionicons name="phone-portrait-outline" size={22} color={Colors.principalLight} />
+          <Text style={[styles.optionText, { color: colors.text }]}>Automático</Text>
+        </TouchableOpacity>
+      </CardView>
+
+      <Text style={[styles.title, { color: colors.text }]}>Mostrar notificaciones</Text>
     </CardContainer>
   );
 }
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    padding: 15,
+  },
+
   option: {
     flexDirection: "row",
     alignItems: "center",

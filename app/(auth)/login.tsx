@@ -1,36 +1,69 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { login } from '../../src/services/auth.service';
-import { router } from 'expo-router';
+import { login, resetPassword, updatePassword, checkEmailExists } from '../../src/services/auth.service';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Loader } from '../../components/loader';
 import { StyleSheet } from 'react-native';
 import { darkColors, lightColors } from '@/constants/theme';
 import { useTheme } from '@/src/context/ThemeContext';
 import { CardContainer } from '@/components/ui/Card';
 import { Colors } from '@/constants/colors';
+import { isValidEmail } from '@/src/utils/validators';
 
 export default function LoginScreen() {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { email, password } = useLocalSearchParams();
+  const [userEmail, setEmail] = useState(email || '');
+  const [userPassword, setPassword] = useState(password || '');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (loading) return;
 
-    if (!email) {
+    if (!userEmail) {
       Alert.alert('Error', 'Por favor ingresa tu correo');
       return;
-    } else if (!password) {
+    } else if (!userPassword) {
       Alert.alert('Error', 'Por favor ingresa tu contraseña');
       return;
     }
 
     setLoading(true);
 
-    const { error } = await login(email, password);
+    const { error } = await login(userEmail.toString(), userPassword.toString());
 
+    setLoading(false);
+
+    if (error?.message.includes('Invalid login credentials')) {
+      Alert.alert('Error', 'Credenciales inválidas');
+      return;
+    }
+    else if (error) {
+      Alert.alert('Error', error.message);
+      return;
+    }
+
+    router.replace('/(tabs)/inicio');
+  };
+
+  const recuperarPassword = async () => {
+    setLoading(true);
+    const existsResponse = await checkEmailExists(userEmail.toString());
+    setLoading(false);
+    if (!userEmail) {
+      Alert.alert('Error', 'Ingresa tu correo electrónico para recuperar la contraseña');
+      return;
+    } else if (!isValidEmail(userEmail.toString())) {
+      Alert.alert('Error', 'Por favor ingresa un correo electrónico válido');
+      return;
+    } else if (!existsResponse.exists) {
+      Alert.alert('Error', 'No existe cuenta asociada a ese correo');
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await resetPassword(userEmail.toString());
     setLoading(false);
 
     if (error) {
@@ -38,8 +71,8 @@ export default function LoginScreen() {
       return;
     }
 
-    router.replace('/(tabs)/inicio');
-  };
+    Alert.alert('Correo enviado', 'Revisa tu bandeja de entrada');
+  }
 
   return (
     <CardContainer style={{ position: "relative" }}>
@@ -52,7 +85,7 @@ export default function LoginScreen() {
           <TextInput
             placeholder="Correo electrónico"
             placeholderTextColor={colors.text}
-            value={email}
+            value={userEmail.toString()}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -66,13 +99,18 @@ export default function LoginScreen() {
             placeholder="Contraseña"
             placeholderTextColor={colors.text}
             secureTextEntry
-            value={password}
+            value={userPassword.toString()}
             onChangeText={setPassword}
             style={
               [styles.input,
               { color: colors.text, backgroundColor: colors.fondo, borderColor: colors.principal }]
             }
           />
+          <TouchableOpacity onPress={recuperarPassword}>
+            <Text style={[styles.linkRecuperar, { color: colors.link }]}>
+              ¿Olvidaste tu contraseña?
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.principal }, loading && styles.buttonDisabled]}
@@ -101,7 +139,7 @@ const styles = StyleSheet.create({
     inset: 0,
     margin: "auto",
     width: 350,
-    height: 365,
+    height: 375,
     paddingHorizontal: 24,
     paddingTop: 30,
     borderRadius: 15,
@@ -140,7 +178,10 @@ const styles = StyleSheet.create({
   link: {
     marginTop: 15,
     textAlign: 'center',
-    color: '#994B4C1',
     fontWeight: '500',
   },
+  linkRecuperar: {
+    fontSize: 12,
+    marginTop: -10,
+  }
 });

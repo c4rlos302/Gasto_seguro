@@ -1,47 +1,43 @@
 import { router } from "expo-router";
 import { CardContainer, CardView } from "@/components/ui/Card";
 import Header from "@/components/ui/Header";
-import { supabase } from "@/src/services/supabase";
 import { useUser } from "../src/hooks/useUser";
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
+import { Loader } from "@/components/loader";
 
 export default function EditarNombre() {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
 
-  const { usuario } = useUser();
-
-  const [nombre, setNombre] = useState(
-    usuario?.nombre || ""
-  );
+  const { usuario, editNombre } = useUser();
+  const [nombre, setNombre] = useState("");
 
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (usuario?.nombre) {
+      setNombre(usuario.nombre);
+    }
+  }, [usuario]);
 
   async function guardarCambios() {
-
     if (!usuario?.id) return;
-
-    setLoading(true);
-
-    const { error } = await supabase
-      .from("usuarios")
-      .update({
-        nombre: nombre
-      })
-      .eq("id", usuario.id);
-
-    setLoading(false);
-
-    if (error) {
-      console.log(error);
+    else if (usuario.nombre === nombre) {
+      Alert.alert("Error", "No puedes asignar el mismo nombre");
+      return;
+    } else if (nombre.length === 0) {
+      Alert.alert("Error", "El nombre no puede estar vacío");
       return;
     }
 
-    alert("Nombre actualizado");
-    router.back();
+    setLoading(true);
+    await editNombre(nombre);
+    setLoading(false);
+
+    Alert.alert("Exito!", "Nombre actualizado");
+    router.push("/perfil");
   }
 
 
@@ -52,37 +48,33 @@ export default function EditarNombre() {
         regresar
       />
       <CardView>
-        <Text style={[styles.title, { color: colors.text }]}>Ingresa el nombre nuevo</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Nuevo nombre:</Text>
         <TextInput
-          placeholder="Nombre completo"
+          placeholder="Ingresa el nombre completo"
           placeholderTextColor={colors.text}
           value={nombre}
           onChangeText={setNombre}
-          style={[styles.input, {backgroundColor: colors.fondo}]}
+          style={[styles.input, { backgroundColor: colors.fondo, color: colors.text }]}
         />
         <TouchableOpacity
-          style={[styles.button, {backgroundColor: colors.principal}, loading && styles.buttonDisabled]}
+          style={[styles.button, { backgroundColor: colors.principal }, loading && styles.buttonDisabled]}
           onPress={guardarCambios}
         >
-          <Text style={[styles.buttonText, {color: colors.text}]}>
+          <Text style={[styles.buttonText, { color: colors.text }]}>
             {loading ? "Guardando..." : "Guardar cambios"}
           </Text>
         </TouchableOpacity>
       </CardView>
-
-
+      <Loader visible={loading} />
     </CardContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 1,
-    padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
+  label: {
+    marginTop: 10,
+    marginBottom: 5,
+    fontWeight: "600",
   },
   input: {
     padding: 14,

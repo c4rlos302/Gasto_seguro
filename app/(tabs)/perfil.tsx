@@ -106,17 +106,25 @@ export default function PerfilScreen() {
         </CardView>
 
         <CardView>
-          <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_perfil")}>
+          <TouchableOpacity style={styles.option} onPress={() => router.push("/editar_nombre")}>
             <Ionicons name="person" size={20} color={Colors.principalLight} />
-            <Text style={[styles.optionText, { color: colors.text }]}>Editar datos</Text>
+            <Text style={[styles.optionText, { color: colors.text }]}>Editar nombre</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
           </TouchableOpacity>
         </CardView>
 
         <CardView>
-          <TouchableOpacity style={styles.option} onPress={() => router.push("/configuracion")}>
-            <Ionicons name="settings" size={20} color={Colors.principalLight} />
-            <Text style={[styles.optionText, { color: colors.text }]}>Configuración</Text>
+          <TouchableOpacity style={styles.option} onPress={() => router.push("/cambiar_contrasena")}>
+            <Ionicons name="lock-closed-outline" size={20} color={Colors.principalLight} />
+            <Text style={[styles.optionText, { color: colors.text }]}>Cambiar contraseña</Text>
+            <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
+          </TouchableOpacity>
+        </CardView>
+
+        <CardView>
+          <TouchableOpacity style={styles.option} onPress={() => router.push("/preferencias")}>
+            <Ionicons name="options-outline" size={20} color={Colors.principalLight} />
+            <Text style={[styles.optionText, { color: colors.text }]}>Preferencias</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
           </TouchableOpacity>
         </CardView>
@@ -143,25 +151,6 @@ export default function PerfilScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 80,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#AACDDC",
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  title: {
-    color: "#ffffff",
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   label: {
     marginTop: 10,
     marginBottom: 5,

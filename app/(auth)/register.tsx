@@ -7,6 +7,7 @@ import { useTheme } from '@/src/context/ThemeContext';
 import { darkColors, lightColors } from '@/constants/theme';
 import { CardContainer } from '@/components/ui/Card';
 import { Colors } from '@/constants/colors';
+import { isValidEmail } from '@/src/utils/validators';
 
 export default function RegisterScreen() {
   const { isDark } = useTheme();
@@ -23,6 +24,12 @@ export default function RegisterScreen() {
     if (!email || !password || !confirmPassword || !nombre) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
+    } else if (!isValidEmail(email)){
+      Alert.alert('Error', 'Por favor ingresa un correo electrónico válido');
+      return;
+    } else if (password.length < 8) {
+      Alert.alert('Error', 'La contraseña debe tener al menos 8 caracteres');
+      return;
     } else if (password !== confirmPassword) {
       Alert.alert('Error', 'Las contraseñas no coinciden');
       return;
@@ -34,13 +41,20 @@ export default function RegisterScreen() {
 
     setLoading(false);
 
-    if (error) {
+    if (error?.message.includes('User already registered')){
+      Alert.alert('Error', 'El correo electrónico ya está registrado');
+      return;
+    }
+    else if (error) {
       Alert.alert('Error', error.message);
       return;
     }
 
     Alert.alert('Éxito', 'Usuario registrado');
-    router.replace('/(auth)/login');
+    router.push({
+      pathname: '/(auth)/login',
+      params: { email, password }
+    })
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
   Modal, TouchableWithoutFeedback,
@@ -17,12 +17,15 @@ import { exportarPDF } from "../../src/utils/exportarPDF";
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
+import dayjs from "dayjs";
+import { useFocusEffect } from "expo-router";
+import { Loader } from "@/components/loader";
 
 type Periodo = "hoy" | "semana" | "mes" | "anio" | "custom" | "todos";
 
 export default function Reportes() {
 
-  const { movimientos } = useMovimientos();
+  const { movimientos, fetchMovimientos } = useMovimientos();
   const { categorias } = useCategorias();
 
   const [modalFechas, setModalFechas] = useState(false);
@@ -34,54 +37,72 @@ export default function Reportes() {
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
   const [fechaFin, setFechaFin] = useState<Date | null>(null);
 
-  const movimientosFiltrados = useMemo(() => {
-    const hoy = new Date();
+  const [loading, setLoading] = useState(false);
 
-    const inicioPeriodo = (() => {
+  useFocusEffect(
+    useCallback(() => {
+      const cargarDatos = async () => {
+        setLoading(true);
+        await Promise.all([
+          fetchMovimientos(),
+        ]);
+        setLoading(false);
+      };
+
+      cargarDatos();
+    }, [])
+  );
+
+  const movimientosFiltrados = useMemo(() => {
+    const hoy = dayjs();
+
+    return movimientos.filter((m: any) => {
+      const fechaMov = dayjs(
+        m.fecha,
+        "YYYY-MM-DD"
+      );
+
       switch (periodo) {
         case "hoy":
-          return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+          return fechaMov.isSame(hoy, "day");
 
         case "semana":
-          const s = new Date();
-          s.setDate(hoy.getDate() - 7);
-          s.setHours(0, 0, 0, 0);
-          return s;
+          return fechaMov.isAfter(
+            hoy.subtract(7, "day").startOf("day")
+          );
 
         case "mes":
-          return new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+          return fechaMov.isSame(hoy, "month");
 
         case "anio":
-          return new Date(hoy.getFullYear(), 0, 1);
+          return fechaMov.isSame(hoy, "year");
+
+        case "custom":
+          if (fechaInicio && fechaFin) {
+            let inicio = dayjs(fechaInicio);
+            let fin = dayjs(fechaFin);
+
+            if (inicio.isAfter(fin)) {
+              [inicio, fin] = [fin, inicio];
+            }
+
+            inicio = inicio.startOf("day");
+            fin = fin.endOf("day");
+
+            return (
+              (fechaMov.isAfter(inicio) ||
+                fechaMov.isSame(inicio)) &&
+              (fechaMov.isBefore(fin) ||
+                fechaMov.isSame(fin))
+            );
+          }
+
+          return true;
 
         case "todos":
         default:
-          return null;
+          return true;
       }
-    })();
-
-    return movimientos.filter((m: any) => {
-      const fechaMov = new Date(m.fecha);
-
-      if (periodo === "custom" && fechaInicio && fechaFin) {
-        let inicio = new Date(fechaInicio);
-        let fin = new Date(fechaFin);
-
-        if (inicio > fin) {
-          [inicio, fin] = [fin, inicio];
-        }
-
-        inicio.setHours(0, 0, 0, 0);
-        fin.setHours(23, 59, 59, 999);
-
-        return fechaMov >= inicio && fechaMov <= fin;
-      }
-
-      if (inicioPeriodo) {
-        return fechaMov >= inicioPeriodo;
-      }
-
-      return true;
     });
   }, [movimientos, periodo, fechaInicio, fechaFin]);
 
@@ -94,10 +115,12 @@ export default function Reportes() {
     <CardContainer>
       <Header title="Reportes y Gráficos" right={
         <TouchableOpacity
-          onPress={() =>
+          onPress={async () => {
+            setLoading(true);
             exportarPDF(movimientosFiltrados, categorias, periodo,
-              fechaInicio?.toLocaleDateString("es-MX"), fechaFin?.toLocaleDateString("es-MX"))
-          }
+              dayjs(fechaInicio).format("DD/MM/YYYY"), dayjs(fechaFin).format("DD/MM/YYYY"));
+            setLoading(false);
+          }}
         >
           <Ionicons
             name="arrow-redo-sharp"
@@ -108,69 +131,70 @@ export default function Reportes() {
       } />
       <View style={styles.filtros}>
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "todos" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "todos" && { backgroundColor: colors.principal }]}
           onPress={() => setPeriodo("todos")}
         >
-          <Text style={{color: colors.text}}>Todos</Text>
+          <Text style={{ color: colors.text }}>Todos</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "hoy" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "hoy" && { backgroundColor: colors.principal }]}
           onPress={() => setPeriodo("hoy")}
         >
-          <Text style={{color: colors.text}}>Hoy</Text>
+          <Text style={{ color: colors.text }}>Hoy</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "semana" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "semana" && { backgroundColor: colors.principal }]}
           onPress={() => setPeriodo("semana")}
         >
-          <Text style={{color: colors.text}}>Semana</Text>
+          <Text style={{ color: colors.text }}>Semana</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "mes" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "mes" && { backgroundColor: colors.principal }]}
           onPress={() => setPeriodo("mes")}
         >
-          <Text style={{color: colors.text}}>Mes</Text>
+          <Text style={{ color: colors.text }}>Mes</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "anio" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "anio" && { backgroundColor: colors.principal }]}
           onPress={() => setPeriodo("anio")}
         >
-          <Text style={{color: colors.text}}>Año</Text>
+          <Text style={{ color: colors.text }}>Año</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.chip, {backgroundColor: colors.chip}, periodo === "custom" && {backgroundColor: colors.principal}]}
+          style={[styles.chip, { backgroundColor: colors.chip }, periodo === "custom" && { backgroundColor: colors.principal }]}
           onPress={() => {
             setPeriodo("custom");
             setModalFechas(true);
           }}
         >
-          <Text style={{color: colors.text}}>Personalizado</Text>
+          <Text style={{ color: colors.text }}>Personalizado</Text>
         </TouchableOpacity>
       </View>
 
       <Modal visible={modalFechas} transparent animationType="slide" >
         <TouchableWithoutFeedback onPress={() => setModalFechas(false)}>
-          <View style={[styles.overlay, {backgroundColor: colors.overlay}]}>
+          <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
             <TouchableWithoutFeedback>
-              <View style={[styles.modal, {backgroundColor: colors.fondo}]}>
-                <Text style={[styles.title, {color: colors.text}]}>Seleccionar rango de fechas</Text>
+              <View style={[styles.modal, { backgroundColor: colors.fondo }]}>
+                <Text style={[styles.title, { color: colors.text }]}>Seleccionar rango de fechas</Text>
 
                 <Pressable
-                  style={[styles.input, {borderColor: colors.principal}]}
+                  style={[styles.input, { borderColor: colors.principal }]}
                   onPress={() => setMostrarCalendarioInicio(true)}
                 >
-                  <Text style={{color: colors.text}}>{fechaInicio ? fechaInicio.toLocaleDateString() : "Inicio"}</Text>
+                  <Text style={{ color: colors.text }}>{fechaInicio ? dayjs(fechaInicio).format("DD/MM/YYYY") : "Inicio"}</Text>
                 </Pressable>
                 {mostrarCalendarioInicio && (
                   <DateTimePicker
                     value={fechaInicio || new Date()}
                     mode="date"
                     display="calendar"
+                    maximumDate={new Date()}
                     onChange={(_, date) => {
                       setMostrarCalendarioInicio(false);
                       date && setFechaInicio(date);
@@ -179,16 +203,17 @@ export default function Reportes() {
                 )}
 
                 <Pressable
-                  style={[styles.input, {borderColor: colors.principal}]}
+                  style={[styles.input, { borderColor: colors.principal }]}
                   onPress={() => setMostrarCalendarioFin(true)}
                 >
-                  <Text style={{color: colors.text}}>{fechaFin ? fechaFin.toLocaleDateString() : "Fin"}</Text>
+                  <Text style={{ color: colors.text }}>{fechaFin ? dayjs(fechaFin).format("DD/MM/YYYY") : "Fin"}</Text>
                 </Pressable>
                 {mostrarCalendarioFin && (
                   <DateTimePicker
                     value={fechaFin || new Date()}
                     mode="date"
                     display="calendar"
+                    maximumDate={new Date()}
                     onChange={(_, date) => {
                       setMostrarCalendarioFin(false);
                       date && setFechaFin(date);
@@ -198,17 +223,17 @@ export default function Reportes() {
 
                 <View style={styles.actions}>
                   <TouchableOpacity
-                    style={[styles.btnClear, {backgroundColor: colors.fondo}]}
+                    style={[styles.btnClear, { backgroundColor: colors.fondo }]}
                     onPress={() => {
                       setFechaInicio(null);
                       setFechaFin(null);
                     }}
                   >
-                    <Text style={{color: colors.text}}>Limpiar</Text>
+                    <Text style={{ color: colors.text }}>Limpiar</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={[styles.btnApply, {backgroundColor: colors.principal}]}
+                    style={[styles.btnApply, { backgroundColor: colors.principal }]}
                     onPress={() => setModalFechas(false)}
                   >
                     <Text style={{ color: colors.text }}>Aplicar</Text>
@@ -225,23 +250,23 @@ export default function Reportes() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <CardView style={styles.balanceCard}>
-          <Text style={[styles.label, {color: colors.text}]}>Balance</Text>
-          <Text style={[styles.balance, {color: colors.text}]}>
+          <Text style={[styles.label, { color: colors.text }]}>Balance</Text>
+          <Text style={[styles.balance, { color: colors.text }]}>
             ${stats.balance.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
           </Text>
         </CardView>
 
         <View style={styles.resumenContainer}>
           <CardView style={styles.resumenCard}>
-            <Text style={[styles.label, {color: colors.text}]}>Ingresos</Text>
-            <Text style={[styles.ingreso, {color: Colors.success}]}>
+            <Text style={[styles.label, { color: colors.text }]}>Ingresos</Text>
+            <Text style={[styles.ingreso, { color: Colors.success }]}>
               ${stats.ingresos.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
 
           <CardView style={styles.resumenCard}>
-            <Text style={[styles.label, {color: colors.text}]}>Gastos</Text>
-            <Text style={[styles.gasto, {color: Colors.error}]}>
+            <Text style={[styles.label, { color: colors.text }]}>Gastos</Text>
+            <Text style={[styles.gasto, { color: Colors.error }]}>
               ${stats.gastos.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
             </Text>
           </CardView>
@@ -256,57 +281,58 @@ export default function Reportes() {
         </CardView>
 
         <CardView>
-          <Text style={[styles.title, {color: colors.text}]} >Estadisticas</Text>
+          <Text style={[styles.title, { color: colors.text }]} >Estadisticas</Text>
           {movimientosFiltrados.length !== 0 ? <View style={styles.statsGrid}>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>Ingresos</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>${stats.ingresos}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>Ingresos</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>${stats.ingresos}</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>Gastos</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>${stats.gastos}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>Gastos</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>${stats.gastos}</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>Balance</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>Balance</Text>
               <Text style={[styles.value, { color: stats.balance >= 0 ? Colors.success : Colors.error }]}>
                 ${stats.balance}
               </Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>Ahorro</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>{stats.ahorro.toFixed(1)}%</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>Ahorro</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>{stats.ahorro.toFixed(1)}%</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>Top categoría</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>{stats.topCategoria}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>Top categoría</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>{stats.topCategoria}</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>No. de Movimientos</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>{stats.totalMovimientos}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>No. de Movimientos</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>{stats.totalMovimientos}</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>No. de Gastos</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>{stats.totalGastos}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>No. de Gastos</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>{stats.totalGastos}</Text>
             </View>
 
-            <View style={[styles.statCard, {backgroundColor: colors.fondo}]}>
-              <Text style={[styles.label, {color: colors.text}]}>No. de Ingresos</Text>
-              <Text style={[styles.value, {color: colors.textSecondary}]}>{stats.totalIngresos}</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.fondo }]}>
+              <Text style={[styles.label, { color: colors.text }]}>No. de Ingresos</Text>
+              <Text style={[styles.value, { color: colors.textSecondary }]}>{stats.totalIngresos}</Text>
             </View>
 
           </View>
             :
-            <Text style={{color: colors.text}}>No hay movimientos registrados</Text>
+            <Text style={{ color: colors.text }}>No hay movimientos registrados</Text>
           }
         </CardView>
       </ScrollView>
+      <Loader visible={loading} />
     </CardContainer>
   );
 }

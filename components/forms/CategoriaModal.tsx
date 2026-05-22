@@ -12,7 +12,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/src/context/ThemeContext';
 import { darkColors, lightColors } from '@/constants/theme';
-import { Colors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -21,6 +20,7 @@ interface Props {
         nombre: string,
         tipo: 'gasto' | 'ingreso'
     ) => void;
+    categorias: any[];
     tipoCategoria?: 'gasto' | 'ingreso';
     activo?: boolean;
     loading?: boolean;
@@ -32,6 +32,7 @@ export default function CategoriaModal({
     visible,
     onClose,
     onSave,
+    categorias,
     tipoCategoria,
     activo = true,
     loading = false,
@@ -46,6 +47,21 @@ export default function CategoriaModal({
     const guardar = () => {
         if (!nombre.trim()) {
             Alert.alert("Error", "Escribe un nombre a la categoría")
+            return;
+        }
+        const existeCategoria = categorias.some((cat) => {
+            if (modoEdicion && categoria?.id === cat.id) {
+                return false;
+            }
+
+            return (
+                cat.nombre.trim().toLowerCase() ===
+                nombre.trim().toLowerCase() && cat.tipo === tipo
+            );
+        });
+
+        if (existeCategoria) {
+            Alert.alert("Error", `Ya existe una categoría de ${tipo} con ese nombre`);
             return;
         }
         onSave(nombre, tipo);

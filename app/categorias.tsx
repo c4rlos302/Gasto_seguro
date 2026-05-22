@@ -184,6 +184,7 @@ export default function Categorias() {
                     setCategoriaSeleccionada(null);
                 }}
                 onSave={guardarCategoria}
+                categorias={categorias}
                 categoria={categoriaSeleccionada}
                 modoEdicion={modoEdicion}
                 loading={loading}

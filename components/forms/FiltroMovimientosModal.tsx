@@ -161,6 +161,7 @@ export default function FiltroMovimientosModal({
                                         value={fechaInicio || new Date()}
                                         mode="date"
                                         display="default"
+                                        maximumDate={new Date()}
                                         onChange={(_, f) => {
                                             setMostrarCalendarioInicio(false);
                                             f && setFechaInicio(f);
@@ -178,6 +179,7 @@ export default function FiltroMovimientosModal({
                                         value={fechaFin || new Date()}
                                         mode="date"
                                         display="default"
+                                        maximumDate={new Date()}
                                         onChange={(_, f) => {
                                             setMostrarCalendarioFin(false);
                                             f && setFechaFin(f);

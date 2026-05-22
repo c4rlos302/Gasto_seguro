@@ -17,6 +17,7 @@ import MovimientoModal from '@/components/forms/MovimientoModal';
 import { Colors } from '@/constants/colors';
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
+import dayjs from 'dayjs';
 
 export default function Historial() {
   const { isDark } = useTheme();
@@ -76,8 +77,8 @@ export default function Historial() {
     }
 
     const fechaMovimiento = m.fecha;
-    const fechaInicioStr = inicio ? inicio.toISOString().split("T")[0] : null;
-    const fechaFinStr = fin ? fin.toISOString().split("T")[0] : null;
+    const fechaInicioStr = inicio ? dayjs(inicio).format('YYYY-MM-DD') : null;
+    const fechaFinStr = fin ? dayjs(inicio).format('YYYY-MM-DD') : null;
     const cumpleTipo = !tipoFiltro || m.tipo === tipoFiltro;
     const cumpleCategoria = categoriasFiltro.length === 0 ||
       categoriasFiltro.includes(m.categoria_id);
@@ -175,6 +176,7 @@ export default function Historial() {
           setMovimientoSeleccionado(null);
         }}
         movimiento={movimientoSeleccionado}
+        tipoInicial={movimientoSeleccionado?.tipo}
         modoEdicion={modoEdicion}
         onSuccess={async () => {
           setLoading(true);

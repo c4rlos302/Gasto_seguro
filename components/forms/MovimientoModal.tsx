@@ -1,17 +1,23 @@
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-    Modal, View, Text, TextInput, TouchableOpacity, StyleSheet,
-    Pressable, ScrollView, TouchableWithoutFeedback, Alert
+    Alert,
+    Modal,
+    Pressable, ScrollView,
+    StyleSheet,
+    Text, TextInput, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
-import { useFocusEffect } from "expo-router";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
+import { darkColors, lightColors } from "@/constants/theme";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useCategorias } from "@/src/hooks/useCategorias";
 import { useMovimientos } from "@/src/hooks/useMovimientos";
+import dayjs from 'dayjs';
 import { Loader } from "../loader";
 import CategoriaModal from "./CategoriaModal";
-import { useTheme } from "@/src/context/ThemeContext";
-import { darkColors, lightColors } from "@/constants/theme";
 
 interface Props {
     visible: boolean;
@@ -62,7 +68,7 @@ export default function MovimientoModal({
         if (visible && movimiento) {
             setMonto(movimiento.monto.toString());
             setDescripcion(movimiento.descripcion || "");
-            setFecha(new Date(movimiento.fecha));
+            setFecha(dayjs(movimiento.fecha, "YYYY-MM-DD").toDate());
             setCategoriaId(movimiento.categoria_id);
             setTipo(movimiento.tipo);
         }
@@ -88,25 +94,29 @@ export default function MovimientoModal({
         if (!monto) {
             Alert.alert("Error", "Escribe un monto");
             return;
-        }
-
-        if (!fecha) {
-            Alert.alert("Error", "Selecciona fecha");
+        } else if (parseFloat(monto) <= 0) {
+            Alert.alert("Error", "El monto tiene que ser mayor a 0");
+            return;
+        } else if (!fecha) {
+            Alert.alert("Error", "Selecciona una fecha");
+            return;
+        } else if (!categoriaId) {
+            Alert.alert("Error", "Selecciona una categoría");
             return;
         }
+        const fechaFormat = dayjs(fecha).format('YYYY-MM-DD');
 
-        if (!categoriaId) {
-            Alert.alert("Error", "Selecciona categoría");
+        if (dayjs(fechaFormat).isAfter(dayjs(), "day")) {
+            Alert.alert("Error", "No puedes registrar movimientos futuros");
             return;
         }
-
         setLoading(true);
         const data = {
             monto: parseFloat(monto),
             descripcion,
             categoria_id: categoriaId,
             tipo,
-            fecha: fecha.toISOString().split("T")[0],
+            fecha: fechaFormat,
         };
 
         if (modoEdicion && movimiento) {
@@ -174,7 +184,7 @@ export default function MovimientoModal({
                                 onPress={() => setShow(true)}
                             >
                                 <Text style={{ color: colors.text }}>
-                                    {fecha ? fecha.toLocaleDateString() : "Seleccionar fecha"}
+                                    {fecha ? dayjs(fecha).format("DD/MM/YYYY") : "Seleccionar fecha"}
                                 </Text>
                             </Pressable>
                             {show && (
@@ -182,6 +192,7 @@ export default function MovimientoModal({
                                     value={fecha || new Date()}
                                     mode="date"
                                     display="default"
+                                    maximumDate={new Date()}
                                     onChange={(_, f) => {
                                         setShow(false);
                                         f && setFecha(f);
@@ -230,10 +241,10 @@ export default function MovimientoModal({
                             />
 
                             <TouchableOpacity
-                                style={[styles.button, {backgroundColor: colors.principal}]}
+                                style={[styles.button, { backgroundColor: colors.principal }]}
                                 onPress={guardarMovimiento}
                             >
-                                <Text style={[styles.buttonText, {color: colors.text}]}>
+                                <Text style={[styles.buttonText, { color: colors.text }]}>
                                     {modoEdicion ? "Guardar cambios" : "Guardar movimiento"}
                                 </Text>
                             </TouchableOpacity>
@@ -249,6 +260,7 @@ export default function MovimientoModal({
                     setModalCategoriasVisible(false);
                 }}
                 onSave={guardarCategoria}
+                categorias={categorias}
                 modoEdicion={false}
                 loading={loading}
                 activo={false}

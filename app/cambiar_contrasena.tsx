@@ -4,38 +4,57 @@ import { router } from "expo-router";
 import { Loader } from "@/components/loader";
 import Header from "@/components/ui/Header";
 import { CardContainer, CardView } from "@/components/ui/Card";
-import { createClient } from "@supabase/supabase-js";
-import { supabase } from "@/src/services/supabase";
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
+import { checkEmailExists, login, resetPassword, updatePassword } from '@/src/services/auth.service';
+import { supabase } from '@/src/services/supabase';
+import { isValidEmail } from '@/src/utils/validators';
 
 
 export default function CambiarContrasena() {
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
+  const [passwordAnt, setPasswordAnt] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChangePassword = async () => {
-    if (!password || !confirmPassword) {
+    if (!passwordAnt || !password || !confirmPassword) {
       Alert.alert("Error", "Llena todos los campos");
+      return;
+    } else if (password.length < 8) {
+      Alert.alert('Error', 'La contraseña debe tener al menos 8 caracteres');
+      return;
+    } else if (password !== confirmPassword) {
+      Alert.alert("Error", "Las contraseñas no coinciden");
       return;
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden");
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      setLoading(false);
+
+      Alert.alert(
+        "Error",
+        "No se pudo obtener el usuario"
+      );
+
       return;
     }
 
     setLoading(true);
 
-    const { error } = await supabase.auth.updateUser({
-      password: password,
-    });
+    const { error: loginError } = await login(user.email, passwordAnt);
+    if (loginError) {
+      setLoading(false);
+      Alert.alert("Error", "La contraseña actual es incorrecta");
+      return;
+    }
 
+    const { error } = await updatePassword(password);
     setLoading(false);
-
     if (error) {
       Alert.alert("Error", error.message);
       return;
@@ -46,6 +65,26 @@ export default function CambiarContrasena() {
     router.back();
   };
 
+  const recuperarPassword = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      setLoading(false);
+      Alert.alert('Error', 'No se pudo obtener el correo electronico');
+      return;
+    }
+    
+    const { error } = await resetPassword(user.email);
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('Error', error.message);
+      return;
+    }
+
+    Alert.alert('Correo enviado', 'Revisa tu bandeja de entrada');
+  }
+
   return (
 
     <CardContainer>
@@ -55,17 +94,36 @@ export default function CambiarContrasena() {
       />
 
       <CardView>
-        <Text style={[styles.title, { color: colors.text }]}>Nueva contraseña:</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Contraseña actual:</Text>
         <TextInput
-          placeholder="Contraseña"
+          placeholder="Ingresa la contraseña actual"
           placeholderTextColor={colors.text}
+          secureTextEntry
+          value={passwordAnt}
+          onChangeText={setPasswordAnt}
+          style={[styles.input, { backgroundColor: colors.fondo }]}
+        />
+        <TouchableOpacity onPress={recuperarPassword}>
+          <Text style={[styles.linkRecuperar, { color: colors.link }]}>
+            ¿Olvidaste tu contraseña?
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={[styles.label, { color: colors.text }]}>Nueva contraseña:</Text>
+        <TextInput
+          placeholder="Ingresa la nueva contraseña"
+          placeholderTextColor={colors.text}
+          secureTextEntry
           value={password}
           onChangeText={setPassword}
           style={[styles.input, { backgroundColor: colors.fondo }]}
         />
+
+        <Text style={[styles.label, { color: colors.text }]}>Corfirmar nueva contraseña:</Text>
         <TextInput
-          placeholder="Confirmar contraseña"
+          placeholder="Confirma la nueva contraseña"
           placeholderTextColor={colors.text}
+          secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           style={[styles.input, { backgroundColor: colors.fondo }]}
@@ -79,17 +137,17 @@ export default function CambiarContrasena() {
           </Text>
         </TouchableOpacity>
       </CardView>
+      <Loader visible={loading} />
     </CardContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
+  label: {
+    marginTop: 10,
+    marginBottom: 5,
+    fontWeight: "600",
+
   },
   input: {
     padding: 14,
@@ -107,5 +165,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "600",
+  },
+  linkRecuperar: {
+    fontSize: 12,
+    marginTop: -10,
   }
 });

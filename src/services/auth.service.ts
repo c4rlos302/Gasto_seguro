@@ -5,7 +5,7 @@ export const login = async (email: string, password: string) => {
     email,
     password,
   });
-  
+
   return { data, error };
 };
 
@@ -47,4 +47,37 @@ export const getUser = async () => {
     .single();
 
   return { data, error };
+};
+
+export const resetPassword = async (email: string) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'gastoseguro://reset-password',
+  })
+
+  return { data, error };
+}
+
+export const updatePassword = async (password: string) => {
+  const { data, error } = await supabase.auth.updateUser({ password });
+  return { data, error };
+}
+
+export const checkEmailExists = async (email: string) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      success: false,
+      exists: false,
+    };
+  }
+
+  return {
+    success: true,
+    exists: !!data,
+  };
 };
