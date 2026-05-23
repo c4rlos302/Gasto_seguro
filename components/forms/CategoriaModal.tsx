@@ -44,6 +44,14 @@ export default function CategoriaModal({
     const [nombre, setNombre] = useState('');
     const [tipo, setTipo] = useState<'gasto' | 'ingreso'>('gasto');
 
+    const normalizarTexto = (texto: string) => {
+        return texto
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    };
+
     const guardar = () => {
         if (!nombre.trim()) {
             Alert.alert("Error", "Escribe un nombre a la categoría")
@@ -55,8 +63,8 @@ export default function CategoriaModal({
             }
 
             return (
-                cat.nombre.trim().toLowerCase() ===
-                nombre.trim().toLowerCase() && cat.tipo === tipo
+                normalizarTexto(cat.nombre) ===
+                normalizarTexto(nombre) && cat.tipo === tipo
             );
         });
 

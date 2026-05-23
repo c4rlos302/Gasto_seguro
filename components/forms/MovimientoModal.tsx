@@ -156,13 +156,19 @@ export default function MovimientoModal({
                             <View style={styles.tipos}>
                                 <TouchableOpacity
                                     style={[styles.tipoBoton, { backgroundColor: colors.chip }, tipo === "gasto" && { backgroundColor: colors.principal }]}
-                                    onPress={() => setTipo("gasto")}
+                                    onPress={() => {
+                                        setTipo("gasto");
+                                        setCategoriaId("");
+                                    }}
                                 >
                                     <Text style={{ color: colors.text }}>Gasto</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.tipoBoton, { backgroundColor: colors.chip }, tipo === "ingreso" && { backgroundColor: colors.principal }]}
-                                    onPress={() => setTipo("ingreso")}
+                                    onPress={() => {
+                                        setTipo("ingreso");
+                                        setCategoriaId("");
+                                    }}
                                 >
                                     <Text style={{ color: colors.text }}>Ingreso</Text>
                                 </TouchableOpacity>

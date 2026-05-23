@@ -3,11 +3,12 @@ import { Movimiento } from '@/src/types/movimiento'
 import { formatFecha } from '@/src/utils/fecha'
 import { Ionicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from '@/constants/colors'
+import { useFocusEffect } from 'expo-router'
 
 interface Props {
     movimientos: Movimiento[];
@@ -24,7 +25,7 @@ export default function FlashListMovimientos({
 }: Props) {
     const { isDark } = useTheme();
     const colors = isDark ? darkColors : lightColors;
-    const { categorias } = useCategorias();
+    const { categorias, fetchCategorias } = useCategorias();
     const categoriasMap = useMemo(() => {
         return categorias.reduce(
             (acc: any, cat: any) => {
@@ -33,10 +34,20 @@ export default function FlashListMovimientos({
             }, {});
     }, [categorias]);
 
+    useFocusEffect(
+        useCallback(() => {
+            const cargar = async () => {
+                await fetchCategorias();
+            };
+
+            cargar();
+        }, [])
+    );
+
     const renderContenido = (m: Movimiento) => (
-        <View style={[styles.movimiento, {borderBottomColor: colors.principal},
+        <View style={[styles.movimiento, { borderBottomColor: colors.principal },
         movimientoSeleccionado?.id === m.id &&
-        {borderRadius: 12, backgroundColor: colors.secundario}
+        { borderRadius: 12, backgroundColor: colors.secundario }
         ]}>
             <View style={[styles.icono, { backgroundColor: colors.principal }]}>
                 <Ionicons
@@ -47,20 +58,20 @@ export default function FlashListMovimientos({
             </View>
 
             <View style={styles.info}>
-                <Text style={[styles.categoria, {color: colors.text}]}>
+                <Text style={[styles.categoria, { color: colors.text }]}>
                     {categoriasMap[m.categoria_id] || "Sin categoría"}
                 </Text>
 
-                <Text style={[styles.descripcion, {color: colors.textSecondary}]}>
+                <Text style={[styles.descripcion, { color: colors.textSecondary }]}>
                     {m.descripcion || "Sin descripción"}
                 </Text>
 
-                <Text style={[styles.fecha, {color: colors.textSecondary}]}>
+                <Text style={[styles.fecha, { color: colors.textSecondary }]}>
                     {formatFecha(m.fecha)}
                 </Text>
             </View>
 
-            <Text style={[styles.monto, {color: Colors.principalLight}]}>
+            <Text style={[styles.monto, { color: Colors.principalLight }]}>
                 {m.tipo === "gasto" ? "-" : "+"} $ {parseFloat(m.monto).toFixed(2)}
             </Text>
         </View>
@@ -91,7 +102,7 @@ export default function FlashListMovimientos({
                             size={60}
                             color={colors.principal}
                         />
-                        <Text style={[styles.emptyText, {color: colors.text}]}>No hay movimientos</Text>
+                        <Text style={[styles.emptyText, { color: colors.text }]}>No hay movimientos</Text>
                     </View>
                 )}
             />

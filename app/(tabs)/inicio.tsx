@@ -15,6 +15,7 @@ import { useMovimientos } from "@/src/hooks/useMovimientos";
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
+import { generarMovimientosAutomaticos } from "@/src/services/recurrentes.service";
 
 export default function Inicio() {
   const { isDark } = useTheme();
@@ -26,6 +27,7 @@ export default function Inicio() {
     useCallback(() => {
       const cargarDatos = async () => {
         setLoading(true);
+        await generarMovimientosAutomaticos();
         await Promise.all([
           fetchMovimientos(),
         ]);
@@ -168,7 +170,7 @@ export default function Inicio() {
           </View>
         </CardView>
 
-        <CardView style={{marginBottom: 30}} >
+        <CardView style={{ marginBottom: 30 }} >
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Últimos movimientos</Text>
             <TouchableOpacity onPress={() => router.push("/historial")} >
