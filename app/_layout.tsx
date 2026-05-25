@@ -6,9 +6,9 @@ import "react-native-reanimated";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { useEffect, useState } from 'react';
-import * as Notifications from "expo-notifications";
+import { requestPermissionsAsync, setNotificationHandler } from "expo-notifications";
 
-Notifications.setNotificationHandler({
+setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
     shouldShowList: true,
@@ -48,7 +48,7 @@ function RootStack() {
   return (
     <NavigationThemeProvider value={isDark ? MyDarkTheme : MyLightTheme}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <Stack screenOptions={{headerShown: false}} />
+      <Stack screenOptions={{ headerShown: false }} />
     </NavigationThemeProvider>
   );
 }
@@ -56,7 +56,7 @@ function RootStack() {
 export default function RootLayout() {
 
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    requestPermissionsAsync();
   }, []);
 
   return (
@@ -64,5 +64,5 @@ export default function RootLayout() {
       <RootStack />
     </ThemeProvider>
   );
-  
+
 }

@@ -1,10 +1,24 @@
-import * as Notifications from "expo-notifications";
+import { getPermissionsAsync, scheduleNotificationAsync } from "expo-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function enviarNotificacion(
   titulo: string,
   mensaje: string
 ) {
-  await Notifications.scheduleNotificationAsync({
+  const config = await AsyncStorage.getItem(
+    "notificacionesActivas"
+  );
+
+  const activas = config ? JSON.parse(config) : true;
+
+  if (!activas) return;
+
+  const permiso =
+    await getPermissionsAsync();
+
+  if (permiso.status !== "granted") return;
+
+  await scheduleNotificationAsync({
     content: {
       title: titulo,
       body: mensaje,
@@ -22,7 +36,7 @@ export async function verificarPresupuesto(
   if (gastos >= ingresos) {
     await enviarNotificacion(
       "¡Presupuesto excedido!",
-      "Tus gastos alcanzaron el límite de tus ingresos"
+      "Tus gastos superaron el límite de tus ingresos"
     );
   } else if (restante <= 500) {
     await enviarNotificacion(

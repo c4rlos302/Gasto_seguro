@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text, View, ScrollView } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -79,13 +79,22 @@ export default function Inicio() {
 
   }, [movimientos]);
 
-  React.useEffect(() => {
-  verificarPresupuesto(ingresosMes, gastosMes);
-}, [ingresosMes, gastosMes]);
+  const notificacionEnviada = useRef(false);
+
+  useEffect(() => {
+    if (notificacionEnviada.current) return;
+
+    const restante = ingresosMes - gastosMes;
+
+    if (gastosMes >= ingresosMes || restante <= 500) {
+      notificacionEnviada.current = true;
+      verificarPresupuesto(ingresosMes, gastosMes);
+    }
+  }, [ingresosMes, gastosMes]);
 
   return (
     <CardContainer>
-      <Header title={`Hola, ${usuario?.nombre?.split(" ")[0]}`} avatar={usuario?.avatar_url}/>
+      <Header title={`Hola, ${usuario?.nombre?.split(" ")[0]}`} avatar={usuario?.avatar_url} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
