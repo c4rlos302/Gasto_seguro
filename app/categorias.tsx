@@ -161,7 +161,7 @@ export default function Categorias() {
                     }}
                 >
                     <Ionicons name="create" size={20} color={Colors.principalLight} />
-                    <Text style={[styles.optionText, {color: colors.text}]} >Modificar catogoria</Text>
+                    <Text style={[styles.optionText, {color: colors.text}]} >Modificar categoria</Text>
                     <Ionicons name="chevron-forward" size={20} color={Colors.principalLight} />
                 </TouchableOpacity>
             </CardView>

@@ -80,7 +80,7 @@ export default function Inicio() {
 
   return (
     <CardContainer>
-      <Header title={`Hola, ${usuario?.nombre ? usuario?.nombre.split(' ')[0] : ""}`} />
+      <Header title={`Hola, ${usuario?.nombre?.split(" ")[0]}`} avatar={usuario?.avatar_url}/>
 
       <ScrollView showsVerticalScrollIndicator={false}>
 

@@ -59,7 +59,7 @@ export default function PerfilScreen() {
 
   return (
     <CardContainer>
-      <Header title="Mi perfil" />
+      <Header title="Mi perfil" avatar={usuario?.avatar_url}/>
       <View style={{ padding: 10 }}>
         <CardView>
           <View style={styles.avatarContainer}>

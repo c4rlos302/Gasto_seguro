@@ -20,10 +20,13 @@ import { Colors } from "@/constants/colors";
 import dayjs from "dayjs";
 import { useFocusEffect } from "expo-router";
 import { Loader } from "@/components/loader";
+import { useUser } from "@/src/hooks/useUser";
 
 type Periodo = "hoy" | "semana" | "mes" | "anio" | "custom" | "todos";
 
 export default function Reportes() {
+
+  const { usuario } = useUser();
 
   const { movimientos, fetchMovimientos } = useMovimientos();
   const { categorias } = useCategorias();
@@ -113,14 +116,16 @@ export default function Reportes() {
 
   return (
     <CardContainer>
-      <Header title="Reportes y Gráficos" right={
+      <Header title="Reportes y Gráficos" 
+      avatar={usuario?.avatar_url}
+      right={
         <TouchableOpacity
           onPress={async () => {
             setLoading(true);
             exportarPDF(movimientosFiltrados, categorias, periodo,
               dayjs(fechaInicio).format("DD/MM/YYYY"), dayjs(fechaFin).format("DD/MM/YYYY"));
             setLoading(false);
-          }}
+          }} 
         >
           <Ionicons
             name="arrow-redo-sharp"

@@ -18,8 +18,10 @@ import { Colors } from '@/constants/colors';
 import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import dayjs from 'dayjs';
+import { useUser } from "@/src/hooks/useUser";
 
 export default function Historial() {
+  const { usuario } = useUser();
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
   const { movimientos, fetchMovimientos, removeMovimiento } = useMovimientos();
@@ -130,7 +132,9 @@ export default function Historial() {
   return (
     <CardContainer>
       <Header
+er
         title="Historial de movimientos"
+        avatar={usuario?.avatar_url}
         right={
           <TouchableOpacity
             onPress={() => setModalFiltros(true)}
