@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback } from 'react'
 import { useFocusEffect } from "expo-router";
 import { useCategorias } from '@/src/hooks/useCategorias';
+import { useUser } from "@/src/hooks/useUser";
 import CategoriaModal from '@/components/forms/CategoriaModal';
 import Header from '@/components/ui/Header'
 import { CardContainer, CardView } from '@/components/ui/Card'
@@ -15,6 +16,7 @@ import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
 
 export default function Categorias() {
+    const { usuario } = useUser();
     const { isDark } = useTheme();
     const colors = isDark ? darkColors : lightColors;
 
@@ -86,7 +88,7 @@ export default function Categorias() {
 
     return (
         <CardContainer>
-            <Header title="Categorias" regresar />
+            <Header title="Categorias" regresar avatar={usuario?.avatar_url}/>
             <CardView>
                 <Text style={[styles.label, { color: colors.text }]}>Tipo Gasto:</Text>
                 <ScrollView style={{ maxHeight: 125 }}>

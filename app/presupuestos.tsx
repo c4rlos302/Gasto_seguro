@@ -11,8 +11,10 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import RecurrentesModal from '@/components/forms/RecurrenteModal'
 import { Loader } from '@/components/loader'
 import dayjs from 'dayjs'
+import { useUser } from "@/src/hooks/useUser";
 
 export default function Presupuestos() {
+  const { usuario } = useUser();
   const { isDark } = useTheme();
   const colors = isDark ? darkColors : lightColors;
 
@@ -74,6 +76,7 @@ export default function Presupuestos() {
     <CardContainer>
       <Header
         title="Presupuestos"
+        avatar={usuario?.avatar_url}
         regresar
       />
 
