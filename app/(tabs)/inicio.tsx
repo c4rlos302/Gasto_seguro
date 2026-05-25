@@ -16,6 +16,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
 import { Colors } from "@/constants/colors";
 import { generarMovimientosAutomaticos } from "@/src/services/recurrentes.service";
+import { verificarPresupuesto } from "@/src/services/notificaciones";
 
 export default function Inicio() {
   const { isDark } = useTheme();
@@ -77,6 +78,10 @@ export default function Inicio() {
       );
 
   }, [movimientos]);
+
+  React.useEffect(() => {
+  verificarPresupuesto(ingresosMes, gastosMes);
+}, [ingresosMes, gastosMes]);
 
   return (
     <CardContainer>

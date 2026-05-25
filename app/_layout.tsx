@@ -5,6 +5,17 @@ import "react-native-reanimated";
 
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import { darkColors, lightColors } from "@/constants/theme";
+import { useEffect, useState } from 'react';
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 function RootStack() {
   const { isDark } = useTheme();
@@ -43,9 +54,15 @@ function RootStack() {
 }
 
 export default function RootLayout() {
+
+  useEffect(() => {
+    Notifications.requestPermissionsAsync();
+  }, []);
+
   return (
     <ThemeProvider>
       <RootStack />
     </ThemeProvider>
   );
+  
 }
