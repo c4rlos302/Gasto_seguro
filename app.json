@@ -12,7 +12,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#00000000",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
@@ -28,11 +28,9 @@
       [
         "expo-splash-screen",
         {
+          "image": "./assets/images/adaptive-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#ffffff"
         }
       ],
       "@react-native-community/datetimepicker"
@@ -44,9 +42,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "7e3e3980-28d5-4b3f-8976-9da0585f04a2"
+        "projectId": "27a45de9-e430-4778-b1fb-e2b586a1b7b2"
       }
-    }
+    },
+    "owner": "carlosreynosos-organization"
   }
-  
 }
